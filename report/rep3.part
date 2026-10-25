@@ -1,0 +1,235 @@
+\newpage
+\section{Туршилт ба UI дүрслэл}
+
+\subsection{Юуг өөрчилж турших вэ}
+\begin{center}
+\small
+\begin{tabular}{L{3.0cm}L{4.6cm}L{6.6cm}}
+\toprule
+Өөрчлөх зүйл & Модонд юу өөрчлөгдөх & Юуг нотлох \\
+\midrule
+\textbf{Threshold} & Модны \emph{гүн} ба навчны тоо &
+Threshold нь рекурсийн гүнийг шууд тодорхойлно; хэт жижиг бол fork-ийн
+зардал давамгайлна \\
+\textbf{Алгоритм} & Модны \emph{хэлбэр} &
+Mergesort тэгш хэмтэй, Quicksort pivot-оос хамаарч тэгш бус \\
+\textbf{Өгөгдлийн хэв маяг} & Quicksort-ийн модны тэнцвэр &
+Гурван талт хуваалтын ач тус (ALL\_EQUAL дээр ганц зангилаа) \\
+\textbf{Урсгалын тоо} & Өнгөний тоо ба тархалт &
+Work stealing --- ажил урсгалуудын хооронд динамикаар хуваарилагдана \\
+\textbf{Массивын хэмжээ} & Модны \emph{өргөн} &
+$n$ хоёр дахин өсөхөд мод нэг түвшин өндөрснө \\
+\textbf{Seed} & Өгөгдөл өөрчлөгдөнө & Үр дүн давтагдах эсэх \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Дүрслэлээс юуг ажиглах вэ}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item \textbf{Зангилаа $=$ \texttt{compute()} дуудлага.} Шошго нь тухайн
+        дуудлагын хариуцсан \texttt{[lo,hi)} муж.
+  \item \textbf{Өнгө $=$ ажилчин урсгал.} Нэг дэд мод олон өнгөтэй байвал ---
+        тэр ажил \emph{хулгайлагдсан} гэсэн үг.
+  \item \textbf{Дүүрэн өнгө $=$ навч.} Яг энд рекурс зогсож insertion sort
+        ажилласан. Навчны тоо $\approx n/\text{threshold}$.
+  \item \textbf{Гүн.} Mergesort-д яг $\lceil\log_2(n/k)\rceil$; Quicksort-д
+        илүү их бөгөөд өгөгдлөөс хамаарна.
+  \item \textbf{Алхамчилсан горим} нь зангилааг \emph{үүссэн дарааллаар} нээдэг
+        тул fork-ийн тархалтыг хугацааны дарааллаар харж болно.
+\end{enumerate}
+
+\begin{figure}[h]\centering
+\includegraphics[width=0.96\textwidth]{../docs/images/fig_med_merge.png}
+\caption{Mergesort, $n=400$, threshold $=25$, 4 урсгал. Мод \emph{төгс
+тэнцвэртэй}: түвшин бүрт хэмжээ яг хоёр дахин багасна. Өнгө нь ажлыг дөрвөн
+ажилчин урсгал хооронд хуваасныг харуулна.}
+\end{figure}
+
+\begin{figure}[h]\centering
+\includegraphics[width=0.96\textwidth]{../docs/images/fig_med_quick.png}
+\caption{Quicksort, ижил өгөгдөл ба тохиргоо. Хуваалт \emph{тэгш бус} ---
+үндэс $[0,400)$ нь $206$ ба $193$ болж хуваагдав (нэг элемент нь pivot).
+Зарим зангилаа ганц хүүхэдтэй: нөгөө тал нь хоосон болсон.}
+\end{figure}
+
+\begin{figure}[h]\centering
+\includegraphics[width=0.96\textwidth]{../docs/images/fig_thresh_small.png}
+\caption{Ижил өгөгдөл ($n=400$, Mergesort) дээр threshold-ийг $25 \to 5$
+болгов. Мод хоёр түвшин өндөрсөж, навчны тоо дөрөв дахин нэмэгдэв ---
+threshold ба рекурсийн гүний хамаарлын шууд нотолгоо.}
+\end{figure}
+
+\begin{figure}[h]\centering
+\includegraphics[width=0.62\textwidth]{../docs/images/fig_alleq_quick.png}
+\caption{Quicksort, бүх элемент ижил ($n=400$). Гурван талт хуваалтын ачаар
+мод \textbf{ганц зангилаатай} --- нэг хуваалтаар бүх элемент эцсийн байрандаа
+суув. Энгийн хоёр талт хуваалт бол энд 400 түвшинтэй мод үүсгэж стек халах байв.}
+\end{figure}
+
+\newpage
+\section{Туршилтын арга}
+
+\subsection{Орчин}
+\begin{center}
+\small
+\begin{tabular}{lL{9.5cm}}
+\toprule
+Үзүүлэлт & Утга \\
+\midrule
+Java & OpenJDK \textbf{21.0.12.1} \\
+OS & Linux x86\_64 \\
+Процессор & \textbf{2 логик цөм} \\
+Хэмжилтийн горим & \texttt{--bench}, модны бүртгэлгүй (\texttt{--no-trace}) \\
+JIT халаалт & Хэмжилт бүрийн өмнө 200\,000 элементээр нэг удаа халаана \\
+Жишиг (baseline) & \emph{Ижил} алгоритм, \emph{ижил} threshold, нэг урсгалаар \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Жишгийг ижил алгоритм, ижил threshold-оор авсан нь чухал: ингэснээр
+хурдасгалтын тоо нь \emph{зөвхөн параллельчлалын} нөлөөг хэмжинэ, алгоритмын
+ялгаа хольцгүй болно.
+
+\subsection{Туршилтын өгөгдөл}
+Таван хэв маяг: \texttt{RANDOM}, \texttt{SORTED}, \texttt{REVERSED},
+\texttt{FEW\_UNIQUE} (5 ялгаатай утга), \texttt{ALL\_EQUAL}. Бүгд тогтмол
+seed-тэй тул давтагдана.
+
+\subsection{Хүлээгдсэн үр дүн ба таамаглал}
+\begin{center}
+\small
+\begin{tabular}{L{0.7cm}L{6.4cm}L{7.2cm}}
+\toprule
+\# & Таамаглал & Үндэслэл \\
+\midrule
+H1 & Threshold хэт жижиг (1--10) үед хурдасгалт $< 1$ болно &
+Fork-ийн зардал ашигтай ажлаас давамгайлна \\
+H2 & Threshold $50$--$500$ орчимд хурдасгалт хамгийн өндөр &
+Задралын ба insertion sort-ийн зардлын тэнцвэр \\
+H3 & Хурдасгалт цөмийн тооноос хэтрэхгүй &
+Amdahl-ын хууль; merge нь цуваа \\
+H4 & Mergesort-ийн модны гүн өгөгдлөөс хамаарахгүй, Quicksort-ийнх хамаарна &
+Mergesort үргэлж яг дундуур хуваана \\
+H5 & \texttt{ALL\_EQUAL} дээр Quicksort хамгийн хурдан &
+Гурван талт хуваалт бүх элементийг нэг алхамд эцсийн байранд нь суулгана \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Үр дүн}
+
+\subsection{Зөв ажиллагаа}
+\begin{lstlisting}[language=bash]
+$ ./test.sh
+=== ДҮН: 58 давсан, 0 унасан ===
+\end{lstlisting}
+
+\begin{center}
+\small
+\begin{tabular}{L{0.7cm}L{6.2cm}cL{5.2cm}}
+\toprule
+\# & Тестийн бүлэг & Тоо & Хамрах хүрээ \\
+\midrule
+1 & Номын жишээ (Figure 4.27) & 4 & Хоёр алгоритм, үр дүн ба мод \\
+2 & Захын оролт & 15 & $n = 0,1,2,3,7,8,9$; threshold $>n$ \\
+3 & Бүх өгөгдлийн хэв маяг & 10 & 5 хэв маяг $\times$ 2 алгоритм \\
+4 & Threshold хувилбарууд & 12 & $1, 2, 10, 100, 5000, 20000$ \\
+5 & Урсгалын тоо & 8 & $1, 2, 4, 8$ \\
+6 & Санамсаргүй ажиллуулалт & 1 & 30 ажиллуулалт, бүх параметр санамсаргүй \\
+7 & Хүчингүй оролт & 6 & threshold $\le 0$, урсгал $=0$, $n<0$, текст оролт \\
+8 & Том массив & 2 & $n = 300\,000$ \\
+\midrule
+ & \textbf{Нийт} & \textbf{58} & бүгд давсан \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Зөв эсэхийг бүх тохиолдолд \texttt{java.util.Arrays.sort}-ын үр дүнтэй
+элемент бүрээр нь тулган шалгасан.
+
+\subsection{Туршилт A --- threshold-ийн нөлөө}
+$n = 1\,000\,000$, \texttt{RANDOM}, 2 урсгал.
+
+\begin{center}
+\small
+\begin{tabular}{rrrrrrr}
+\toprule
+& \multicolumn{3}{c}{\textbf{Mergesort}} & \multicolumn{3}{c}{\textbf{Quicksort}} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+Threshold & парал. мс & цуваа мс & хурдасгалт & парал. мс & цуваа мс & хурдасгалт \\
+\midrule
+1    & 435.0  & 354.5  & \textbf{0.81} & 298.9  & 513.7  & 1.72 \\
+10   & 266.3  & 308.5  & 1.16 & 228.7  & 490.8  & \textbf{2.15} \\
+50   & 179.1  & 356.3  & 1.99 & 230.8  & 460.3  & 1.99 \\
+100  & 226.8  & 417.4  & 1.84 & 320.3  & 651.4  & 2.03 \\
+500  & 708.2  & 1367.6 & 1.93 & 577.2  & 1116.1 & 1.93 \\
+1000 & 1243.5 & 2546.8 & 2.05 & 999.3  & 1936.5 & 1.94 \\
+5000 & 4376.8 & 9021.0 & 2.06 & 4199.9 & 7797.0 & 1.86 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Хамгийн бага \emph{абсолют} хугацаа: Mergesort threshold $=50$ үед
+\textbf{179 мс}, Quicksort threshold $=10$ үед \textbf{229 мс}.
+Threshold $\ge 500$-аас хойш абсолют хугацаа огцом өснө --- навч дээрх
+insertion sort-ийн $O(k^2)$ зардал давамгайлж байна.
+
+\subsection{Туршилт B --- урсгалын тооны нөлөө}
+$n = 1\,000\,000$, threshold $= 100$, \texttt{RANDOM}.
+
+\begin{center}
+\small
+\begin{tabular}{rrrrr}
+\toprule
+& \multicolumn{2}{c}{\textbf{Mergesort}} & \multicolumn{2}{c}{\textbf{Quicksort}} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+Урсгал & мс & хурдасгалт & мс & хурдасгалт \\
+\midrule
+1 & 474.3 & 0.98 & 499.4 & 1.00 \\
+2 & 246.0 & \textbf{1.95} & 300.1 & \textbf{2.03} \\
+4 & 242.3 & 1.68 & 263.9 & 1.89 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Нэг урсгалтай үед хурдасгалт $\approx 1.00$ --- хэмжилтийн арга зүй зөв
+болохын шалгалт. Хоёр урсгалтай үед $\approx 2.0$ буюу \emph{бараг шугаман}.
+Дөрвөн урсгал нь хоёр цөм дээр \emph{нэмэр өгөхгүй} --- бага зэрэг буурсан нь
+оversubscription-ийн зардал.
+
+\subsection{Туршилт C --- өгөгдлийн хэв маягийн нөлөө}
+$n = 500\,000$, threshold $= 100$, 2 урсгал.
+
+\begin{center}
+\small
+\begin{tabular}{lrrrrrr}
+\toprule
+& \multicolumn{3}{c}{\textbf{Mergesort}} & \multicolumn{3}{c}{\textbf{Quicksort}} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+Хэв маяг & мс & гүн & зангилаа & мс & гүн & зангилаа \\
+\midrule
+RANDOM     & 153.3 & 13 & 16383 & 213.6 & 27 & 16941 \\
+SORTED     & \textbf{6.8}   & 13 & 16383 & 196.1 & 27 & 16903 \\
+REVERSED   & 101.9 & 13 & 16383 & 198.5 & 25 & 16773 \\
+FEW\_UNIQUE & 66.4  & 13 & 16383 & 18.5  & 3  & 5 \\
+ALL\_EQUAL  & 6.7   & 13 & 16383 & \textbf{1.7}   & \textbf{0}  & \textbf{1} \\
+\bottomrule
+\end{tabular}
+\label{tab:pattern}
+\end{center}
+
+\subsection{Pivot сонголтын засварын нөлөө}
+\begin{center}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+& \multicolumn{2}{c}{\textbf{Засварын өмнө}} & \multicolumn{2}{c}{\textbf{Засварын дараа}} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+Хэв маяг ($n=200\,000$) & мс & гүн & мс & гүн \\
+\midrule
+SORTED   & 726 & 48 (хязгаар) & \textbf{172} & 15 \\
+REVERSED & 574 & 48 (хязгаар) & \textbf{37}  & 15 \\
+RANDOM   & 274 & 16 & 177 & 17 \\
+\bottomrule
+\end{tabular}
+\end{center}

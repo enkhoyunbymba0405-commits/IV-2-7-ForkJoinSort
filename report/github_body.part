@@ -1,0 +1,209 @@
+\fancyhead[L]{\small IV-2-7 --- Fork-Join Sorting Application}
+\fancyhead[R]{\small GitHub repository}
+
+\begin{document}
+\begin{titlepage}
+\centering
+\vspace*{2.5cm}
+{\large F.CSM302 --- Үйлдлийн систем · Бие даалт 1\par}
+\vspace{1.4cm}
+{\Huge\bfseries\color{accent} GitHub repository\\гарын авлага\par}
+\vspace{0.5cm}
+{\Large Fork-Join Sorting Application\par}
+\vspace{0.3cm}
+{\large Хуваарилалтын код: \textbf{IV-2-7} · Сэдэв №7\par}
+\vspace{0.6cm}
+{\large Кодыг судлах, шүүмжлэхэд зориулсан\par}
+\vfill
+{\large 2026 оны 10-р сар}
+\vspace{2cm}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{Repository-гийн холбоос ба хувилбар}
+
+\begin{center}
+\small
+\begin{tabular}{lL{10.0cm}}
+\toprule
+Талбар & Утга \\
+\midrule
+Холбоос & \texttt{https://github.com/<ХЭРЭГЛЭГЧ>/IV-2-7-ForkJoinSort} \\
+Салбар (branch) & \texttt{main} \\
+Хувилбар (tag) & \texttt{v1.0} --- 9-р долоо хоногт нийтэлсэн хувилбар \\
+Лиценз / нууц өгөгдөл & Нууц түлхүүр, нууц үг, хувийн өгөгдөл \textbf{агуулаагүй} \\
+Гадны сан & \textbf{Байхгүй}. Зөвхөн стандарт JDK. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{lstlisting}[language=bash]
+git clone https://github.com/<ХЭРЭГЛЭГЧ>/IV-2-7-ForkJoinSort.git
+cd IV-2-7-ForkJoinSort
+git checkout v1.0          # үнэлгээнд ашиглах тогтсон хувилбар
+\end{lstlisting}
+
+\section{Фолдерын бүтэц}
+
+\begin{lstlisting}[language=bash]
+IV-2-7-ForkJoinSort/
++-- README.md              төслийн нэр, код, зорилго, Quick Start
++-- SUBMIT.md              илгээх заавар (багийн дотоод)
++-- build.sh / build.bat   компайл
++-- run.sh   / run.bat     ажиллуулах
++-- test.sh                тестийн багц
++-- src/forkjoinsort/      ЭХ КОД
++-- tests/                 58 тест
++-- examples/              оролтын жишээ файлууд
+`-- docs/                  PDF-ууд, зураг, хэмжилтийн үр дүн
+\end{lstlisting}
+
+\begin{center}
+\small
+\begin{tabular}{lL{10.3cm}}
+\toprule
+Хэсэг & Даалгаврын шаардлага \\
+\midrule
+\texttt{README.md} & Төслийн нэр, код, зорилго, Quick Start \textbf{тийм} \\
+\texttt{src/} & Эх код \textbf{тийм} \\
+\texttt{tests/}, \texttt{examples/} & Үндсэн ба нэмэлт тестийн өгөгдөл \textbf{тийм} \\
+\texttt{docs/} & Manual болон шаардлагатай зураг \textbf{тийм} \\
+\texttt{v1.0} tag & 9-р долоо хоногт нийтэлсэн хувилбар \textbf{тийм} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Эх кодын файл бүрийн үүрэг}
+
+\begin{center}
+\small
+\begin{tabular}{lrL{8.0cm}}
+\toprule
+Файл & Мөр & Үүрэг \\
+\midrule
+\multicolumn{3}{l}{\textbf{Алгоритмын цөм}} \\
+\texttt{MergesortAction.java} & 45 & \texttt{RecursiveAction} --- тэнцүү хуваалт + merge \\
+\texttt{QuicksortAction.java} & 65 & \texttt{RecursiveAction} --- 3 талт хуваалт, merge-гүй \\
+\texttt{SequentialSort.java} & 140 & insertion sort, merge, \texttt{partition3},
+pivot сонголт, нэг урсгалт жишиг \\
+\midrule
+\multicolumn{3}{l}{\textbf{Удирдлага ба хэмжилт}} \\
+\texttt{SortRunner.java} & 75 & тохиргоо $\to$ үр дүн. \textbf{UI-ээс бүрэн хамааралгүй} \\
+\texttt{RunConfig.java} & 55 & бүх параметр + оролтын шалгалт \\
+\texttt{RunResult.java} & 30 & хэмжилт, мод, зөв эсэх \\
+\texttt{DataGenerator.java} & 60 & 5 хэв маягийн өгөгдөл, текст оролт задлах \\
+\texttt{Bench.java} & 80 & гурван хэмжилтийн туршилт (CSV) \\
+\texttt{Main.java} & 120 & нэвтрэх цэг: GUI, \texttt{--headless}, \texttt{--bench}, \texttt{--render} \\
+\midrule
+\multicolumn{3}{l}{\textbf{Модны бүртгэл}} \\
+\texttt{TraceRecorder.java} & 70 & \textbf{thread-safe} бүртгэл
+(\texttt{AtomicInteger}, \texttt{ConcurrentLinkedQueue}) \\
+\texttt{TraceNode.java} & 35 & модны нэг зангилаа = нэг \texttt{compute()} дуудлага \\
+\midrule
+\multicolumn{3}{l}{\textbf{Интерфейс}} \\
+\texttt{ui/TreePanel.java} & 250 & \textbf{РЕКУРСИЙН МОД} зурах самбар \\
+\texttt{ui/MainWindow.java} & 300 & цонх, удирдлага, статистик, legend \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Кодыг ямар дарааллаар унших вэ}
+
+Шүүмжлэгчид зориулсан санал болгох маршрут --- \textbf{15--20 минут}:
+
+\begin{enumerate}[leftmargin=*,itemsep=3pt]
+  \item \textbf{\texttt{MergesortAction.java}} (45 мөр) --- бүх зүйлийн гол.
+        \texttt{compute()} функц нь: threshold шалгах $\to$ хуваах $\to$
+        \texttt{invokeAll} $\to$ \texttt{merge}. Сурах бичгийн Project 3-ын
+        шаардлага энд шууд харагдана.
+  \item \textbf{\texttt{QuicksortAction.java}} (65 мөр) --- ижил бүтэц, гэхдээ
+        ажил нь хуваалтын \emph{өмнө}. Гурван талт хуваалтын ач тус
+        (\texttt{hasL}, \texttt{hasR} шалгалт) энд.
+  \item \textbf{\texttt{SequentialSort.partition3()}} --- Dijkstra-гийн гурван
+        талт гүйлт. Яагаад pivot-ыг урьдчилан зөөхгүй байгаа тайлбарыг
+        коммент дотор уншина уу.
+  \item \textbf{\texttt{SortRunner.run()}} --- туршилтын урсгал:
+        жишиг хэмжилт $\to$ fork-join $\to$ \texttt{Arrays.sort}-той тулгах.
+  \item \textbf{\texttt{TraceRecorder.java}} --- олон урсгалаас зэрэг бичигдэх
+        бүртгэлийг цоожгүйгээр хэрхэн аюулгүй болгосон (6--7-р бүлгийн хэрэглээ).
+  \item \textbf{\texttt{ui/TreePanel.layoutTree()}} --- зангилааны дугаар нь
+        модны бүтцийг илэрхийлэхгүй (урсгалууд зэрэг үүсгэдэг тул) учраас
+        эцгийн дугаараар дахин барьж DFS-ээр байрлуулдаг.
+\end{enumerate}
+
+\begin{center}
+\small
+\begin{tabular}{L{5.0cm}L{9.5cm}}
+\toprule
+Хайж байгаа зүйл & Хаанаас харах \\
+\midrule
+``\texttt{RecursiveAction} мөн үү?'' & \texttt{MergesortAction.java:14},
+\texttt{QuicksortAction.java:16} \\
+``\texttt{Comparable} мөн үү?'' & Хоёр файлын класс зарлалт:
+\texttt{<T extends Comparable<? super T>>} \\
+``Threshold хаана шалгагддаг вэ?'' & \texttt{compute()}-ийн эхний \texttt{if} \\
+``Insertion sort мөн үү?'' & \texttt{SequentialSort.insertionSort()} \\
+``Оролтын шалгалт хаана вэ?'' & \texttt{RunConfig.validate()} \\
+``Зөв эсэхийг яаж шалгасан бэ?'' & \texttt{SortRunner.run()} доторх
+\texttt{Arrays.equals(arr, expect)} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Нэг минутад шалгах}
+
+\begin{lstlisting}[language=bash]
+./build.sh && ./test.sh
+# Хүлээгдэх: === ДҮН: 58 давсан, 0 унасан ===   (exit code 0)
+
+./run.sh --headless -i "7,12,19,3,18,4,2,6,15,8" -t 2
+# Хүлээгдэх: Зөв эсэх : ЗӨВ,  [2, 3, 4, 6, 7, 8, 12, 15, 18, 19]
+
+./run.sh --render tree.png -n 400 -t 25 -a quick
+# Дэлгэцгүй ч рекурсийн модыг зураг болгож харж болно
+\end{lstlisting}
+
+\section{Commit-ийн түүх ба багийн оролцоо}
+
+Багийн гишүүн бүр өөрийн хувь нэмрийг commit-ээр баримтжуулсан.
+Түүхийг харах:
+
+\begin{lstlisting}[language=bash]
+git log --oneline --graph --all
+git shortlog -sn            # гишүүн бүрийн commit-ийн тоо
+git log --stat v1.0         # хувилбарт орсон өөрчлөлтүүд
+\end{lstlisting}
+
+\begin{center}
+\small
+\begin{tabular}{llL{7.6cm}}
+\toprule
+Оюутны код & Нэр & Хариуцсан ажил \\
+\midrule
+B200910032 & Д.Дагиймаа & UI: \texttt{TreePanel} --- рекурсийн модны зураглал, зангилаа сонгох, алхамчилсан горим \\
+B221940034 & Д.Оюунжаргал & \texttt{TraceRecorder}, \texttt{TraceNode}, \texttt{DataGenerator} --- модны thread-safe бүртгэл, өгөгдөл үүсгэх \\
+B231930001 & (нэр тодруулах) & Баримт бичиг: \texttt{README.md}, хэрэглэгчийн ба operational гарын авлага, repo/tag/release удирдлага \\
+B241940014 & Г.Мягмарсүрэн & \texttt{TestSuite} --- 58 тест, \texttt{examples/}, хүчингүй оролтын боловсруулалт \\
+B241940127 & О.Энх & Багийн ахлагч. Fork/Join цөм: \texttt{MergesortAction}, \texttt{QuicksortAction}, \texttt{SequentialSort}, \texttt{SortRunner}; нэгтгэл, тайлан \\
+B242270084 & Э.Бүрэнбаяр & \texttt{Bench.java} --- threshold / урсгал / хэв маягийн хэмжилт, \texttt{bench.txt}, үр дүнгийн дүгнэлт \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Known issues}
+
+\begin{enumerate}[nosep,leftmargin=*]
+  \item Модны бүртгэл нь хурдад нөлөөлдөг тул хэмжилтийг
+        \texttt{--no-trace} горимоор авна (\texttt{--bench} үүнийг автоматаар хийнэ).
+  \item $n = 10^6$, threshold $= 10$ үед 200\,000 орчим зангилаа үүсч
+        дүрслэл удаашрана. Дүрслэлд $n \le 5000$ хооронд ажиллуулахыг зөвлөнө.
+  \item Зангилааны утгуудыг зөвхөн 48-аас бага мужид хадгална (санах ой).
+  \item Хурдасгалт машины цөмийн тооноос хамаарна --- хөгжүүлэлтийн орчин
+        2 цөмтэй байсан.
+  \item \texttt{Comparable} шаардлагаас болж \texttt{int[]} биш
+        \texttt{Integer[]} ашигласан (boxing-ийн зардалтай).
+\end{enumerate}
+
+\end{document}

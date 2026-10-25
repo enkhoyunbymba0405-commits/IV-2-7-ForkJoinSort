@@ -1,0 +1,254 @@
+\fancyhead[L]{\small IV-2-7 --- Fork-Join Sorting Application}
+\fancyhead[R]{\small Бие даалт 1 --- Тайлан}
+
+\begin{document}
+\begin{titlepage}
+\centering
+\vspace*{2cm}
+{\large F.CSM302 --- Үйлдлийн систем\par}
+\vspace{1.2cm}
+{\Huge\bfseries\color{accent} Бие даалт 1\par}
+\vspace{0.6cm}
+{\Large Судалгаа, хэрэгжилт, туршилтын тайлан\par}
+\vspace{1.0cm}
+{\LARGE\bfseries Fork-Join Sorting Application\par}
+\vspace{0.3cm}
+{\large Сурах бичгийн Бүлэг 4 --- Programming Project 3\par}
+{\large UI дүрслэл: \textbf{Recursion tree}\par}
+\vspace{1.2cm}
+{\Large Хуваарилалтын код: \textbf{IV-2-7}\par}
+\vfill
+{\large\bfseries Багийн гишүүд\par}
+\vspace{0.3cm}
+\begin{tabular}{ll}
+\toprule
+Оюутны код & Нэр \\
+\midrule
+B200910032 & Д.Дагиймаа \\
+B221940034 & Д.Оюунжаргал \\
+B231930001 & \\
+B241940014 & Г.Мягмарсүрэн \\
+B241940127 & О.Энх \\
+B242270084 & Э.Бүрэнбаяр \\
+\bottomrule
+\end{tabular}
+\vfill
+{\large 2026 оны 10-р сар}
+\vspace{1.5cm}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section*{Хураангуй}
+\addcontentsline{toc}{section}{Хураангуй}
+
+\textbf{Асуудал.} Сурах бичгийн Бүлэг 4-ийн Programming Project 3 нь олон
+урсгалт эрэмбэлэх программыг Java-гийн \emph{fork-join} параллель API-аар
+дахин хэрэгжүүлэхийг шаарддаг --- Quicksort, Mergesort гэсэн хоёр хувилбараар,
+\texttt{RecursiveAction} ашиглан, тодорхой \emph{threshold}-оос доош энгийн
+алгоритм руу шилжих байдлаар. Багшийн нэмэлт шаардлага нь рекурсив задралыг
+\textbf{рекурсийн мод} хэлбэрээр интерактив харуулах явдал юм.
+
+\textbf{Шийдэл.} Java 21 дээр гадны сангүйгээр хэрэгжүүлэв. Хоёр алгоритм
+тус бүр \texttt{RecursiveAction}-ийг өргөтгөнө. \texttt{compute()} дуудлага бүр
+нь \emph{thread-safe} бүртгэлд нэг зангилаа үлдээдэг бөгөөд Swing дээр бичсэн
+самбар эдгээрээс модыг барьж, зангилаа бүрийг \emph{гүйцэтгэсэн ажилчин
+урсгалаар нь} өнгөөр ялгаж харуулна. Массивын хэмжээ, threshold, урсгалын тоо,
+өгөгдлийн хэв маяг, өөрийн оролт --- бүгдийг UI-аас өөрчилж дахин турших
+боломжтой.
+
+\textbf{Туршилт.} Нийт \textbf{58} автомат тест (номын жишээ, захын оролт,
+бүх өгөгдлийн хэв маяг, threshold 1--20\,000, урсгал 1--8, 30 санамсаргүй
+ажиллуулалт, хүчингүй оролт, $n = 300\,000$) --- бүгд давсан. Гүйцэтгэлийн
+хэмжилтийг гурван туршилтаар авсан: threshold-ийн нөлөө, урсгалын тооны нөлөө,
+өгөгдлийн хэв маягийн нөлөө.
+
+\textbf{Гол үр дүн.}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item Хоёр цөмт машин дээр threshold $\ge 50$ үед хурдасгалт $\approx
+        \mathbf{2.0\times}$ --- онолын дээд хязгаарт хүрсэн.
+  \item Threshold $= 1$ үед хурдасгалт $\mathbf{0.8\times}$ болж буурна:
+        fork-ийн зардал ашигтай ажлаас давамгайлав. Threshold-ийн оновчтой
+        муж нь \textbf{50--500}.
+  \item Quicksort дээр \emph{гурван талт} хуваалт хэрэглэснээр давхардсан
+        утгатай өгөгдөл дээр мод 16\,383 зангилаанаас \textbf{1} зангилаа болж
+        багасав.
+  \item Pivot-ыг тогтмол байрлалаар сонговол эрэмбэлэгдсэн өгөгдөл дээр
+        рекурсийн гүн $O(n)$ болж \emph{стек халдгийг} илрүүлж, хэш дээр
+        суурилсан сонголтоор зассан.
+\end{enumerate}
+
+\newpage
+\section{Удиртгал}
+
+\subsection{Зорилго}
+Энэ ажлын зорилго нь Java-гийн fork-join параллелизмыг ашиглан \emph{хуваа ба
+эзэгнэ} (divide-and-conquer) төрлийн эрэмбэлэх алгоритмуудыг хэрэгжүүлж,
+параллель ажлын задралыг \emph{нүдэнд харагдахаар} болгох явдал юм.
+
+\subsection{Ач холбогдол}
+Fork-join загвар нь зөвхөн эрэмбэлэлтийн асуудал биш. Орчин үеийн олон цөмт
+процессор дээр ажлыг рекурсив задлан, ажилчин урсгалууд хоорондоо ажил
+\emph{хулгайлж} (work stealing) ачааллыг тэнцвэржүүлэх энэ загвар нь
+Java-гийн \texttt{parallelStream}, \texttt{Arrays.parallelSort}, мөн C++, .NET,
+Rust-ын параллель сангуудын үндэс болдог. Сурах бичгийн 4.5.2 хэсэгт үүнийг
+\emph{далд урсгалчлал} (implicit threading) гэж үздэг --- программист урсгалыг
+өөрөө үүсгэдэггүй, зөвхөн \emph{ажлыг} задалдаг.
+
+Мөн энэ төсөл нь 4-р бүлгээс гадна 6--7-р бүлгийн синхрончлолын асуудлыг
+практикт хөнддөг: модны бүртгэлийг олон урсгал зэрэг бичдэг тул
+\emph{thread-safe} байх ёстой.
+
+\subsection{Хамрах хүрээ}
+\begin{center}
+\small
+\begin{tabular}{L{7.2cm}L{7.2cm}}
+\toprule
+\textbf{Хамрагдсан} & \textbf{Хамрагдаагүй} \\
+\midrule
+Mergesort, Quicksort --- fork-join хувилбар & Бусад эрэмбэлэх алгоритм
+(heapsort, radix) \\
+\texttt{RecursiveAction}, \texttt{ForkJoinPool} & Бусад параллель загвар
+(Executor, виртуал урсгал) \\
+Рекурсийн модны интерактив дүрслэл & Тархсан (олон машин) хувилбар \\
+Threshold, урсгал, өгөгдлийн хэв маягийн туршилт & Дискэн дээрх (external) эрэмбэлэлт \\
+\texttt{Comparable} интерфейс дэмжсэн ерөнхий төрөл & Тогтвортой (stable) эрэмбэлэлтийн баталгаа \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Сурах бичгийн шаардлага}
+
+Programming Project 3 (Fork-Join Sorting Application) нь Project 2
+(Multithreaded Sorting Application)-ийн үргэлжлэл бөгөөд дараах зүйлсийг
+шаарддаг:
+
+\begin{center}
+\small
+\begin{tabular}{L{0.6cm}L{5.9cm}L{1.6cm}L{6.2cm}}
+\toprule
+\# & Номын шаардлага & Хуудас & Энэ ажилд хэрхэн хангасан \\
+\midrule
+1 & Project 2-ыг Java-гийн fork-join API-аар дахин хэрэгжүүлэх & P-27 &
+\texttt{MergesortAction}, \texttt{QuicksortAction} нь \texttt{ForkJoinPool}
+дотор ажиллана \\
+2 & \emph{Хоёр} хувилбар: Quicksort ба Mergesort & P-27 &
+UI-аас сонгоно; хоёулаа бүрэн хэрэгжсэн \\
+3 & Threshold-оос доош энгийн алгоритм (Selection эсвэл Insertion) руу шилжих
+--- ном ``size 100 or fewer'' гэж жишээ татсан & P-28 &
+\texttt{SequentialSort.insertionSort()}; командын мөрийн өгөгдмөл threshold
+яг \textbf{100} \\
+4 & \texttt{RecursiveTask} биш \texttt{RecursiveAction} өргөтгөх
+(эрэмбэлэлт утга буцаахгүй), Figure 4.19-ийг үз & P-28 \newline Fig.~4.19:\newline х.~184 &
+Хоёр класс хоёулаа \texttt{RecursiveAction} \\
+5 & Объектууд Java-гийн \texttt{Comparable} интерфейсийг хэрэгжүүлсэн байх &
+P-28 & \texttt{<T extends Comparable<? super T>>} ерөнхий параметр \\
+\midrule
+6 & \emph{Багшийн нэмэлт:} рекурсийн модыг UI-д харуулах & --- &
+\texttt{TreePanel} --- fork-join задрал, дэд ажлууд, join үе шат \\
+7 & \emph{Багшийн нэмэлт:} өгөгдлийн хэмжээ ба threshold-ийг өөрчилж турших & --- &
+UI-ийн зүүн самбар + командын мөрийн параметрүүд \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Онолын үндэс}
+
+\subsection{Fork-Join загвар}
+\emph{Эх сурвалж: \S4.5.2 Fork Join (х.~180), \S4.5.2.1 Fork Join in Java
+(х.~180--183), Figure 4.16 (х.~181), Figure 4.17 (х.~182),
+Figure 4.18 --- \texttt{SumTask} код (х.~183), Figure 4.19 --- UML (х.~184).}
+
+Fork-join нь \emph{хуваа ба эзэгнэ} зарчмыг параллель болгосон хэлбэр:
+
+\begin{center}
+\begin{tikzpicture}[x=1cm,y=1cm,
+ b/.style={draw=accent,fill=accent!10,rounded corners=2pt,font=\small,
+           minimum height=7mm,text width=2.4cm,align=center}]
+\node[b] (a) at (0,0) {ажил $n$};
+\node[b] (l) at (-2.4,-1.6) {зүүн $n/2$};
+\node[b] (r) at (2.4,-1.6) {баруун $n/2$};
+\node[b] (j) at (0,-3.2) {join + нэгтгэх};
+\draw[-Stealth,accent] (a) -- node[above left,font=\tiny]{fork} (l);
+\draw[-Stealth,accent] (a) -- node[above right,font=\tiny]{fork} (r);
+\draw[-Stealth,gray!70!black] (l) -- node[below left,font=\tiny]{join} (j);
+\draw[-Stealth,gray!70!black] (r) -- node[below right,font=\tiny]{join} (j);
+\node[font=\scriptsize,anchor=west,align=left] at (4.1,-1.6)
+  {$n \le$ threshold бол\\хуваахаа больж\\insertion sort};
+\end{tikzpicture}
+\end{center}
+
+\begin{itemize}[nosep,leftmargin=*]
+  \item \texttt{fork()} --- дэд ажлыг ээлжинд тавина. \emph{Шинэ урсгал
+        үүсгэдэггүй}.
+  \item \texttt{join()} --- тэр дэд ажил дуустал хүлээнэ.
+  \item \texttt{invokeAll(a, b)} --- \texttt{a.fork(); b.compute(); a.join();}
+        -тэй дүйцнэ. Нэг ажлыг одоогийн урсгал \emph{өөрөө} гүйцэтгэдэг тул
+        дэмий fork хийхгүй.
+\end{itemize}
+
+\textbf{Work stealing.} \texttt{ForkJoinPool} дотор цөмийн тоотой тэнцүү
+ажилчин урсгал байна. Урсгал бүр өөрийн \emph{deque}-тэй: өөрийн ажлыг
+толгойноос нь авч, ажилгүй болсон урсгал өөр урсгалын дарааллын \emph{сүүлээс}
+ажил хулгайлна. Иймээс сая ширхэг \texttt{fork()} хийсэн ч ердөө хэдэн урсгал
+ажиллана. Манай дүрслэлд энэ нь \emph{өнгөний холилдол} болж шууд харагдана.
+
+\subsection{Яагаад \texttt{RecursiveAction} вэ}
+\begin{center}
+\small
+\begin{tabular}{lL{5.0cm}L{6.4cm}}
+\toprule
+& \texttt{RecursiveTask<V>} & \texttt{RecursiveAction} \\
+\midrule
+\texttt{compute()} & \texttt{V} буцаана & \texttt{void} \\
+Хэзээ & Нийлбэр, тоолол --- \emph{үр дүн} буцаах үед &
+\textbf{Эрэмбэлэлт} --- массивыг \emph{газар дээр нь} өөрчилнө \\
+Номын жишээ & \texttt{SumTask} (4.5.2.1) & Энэ төсөл \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Threshold-ийн онол}
+Threshold $k$-ийн сонголт нь хоёр зардлын тэнцвэр:
+\[
+T(n) \;\approx\; \underbrace{\frac{n}{k}\cdot c_{\text{fork}}}_{\text{задралын зардал}}
+\;+\; \underbrace{\frac{n}{k}\cdot O(k^2)}_{\text{навч дээрх insertion sort}}
+\;+\; \underbrace{O(n\log\frac{n}{k})}_{\text{нэгтгэх}}
+\]
+Эхний гишүүн $k$ \emph{өсөхөд буурна}, хоёр дахь нь $k$ өсөхөд \emph{шугаман
+өснө} ($n\cdot k$). Иймээс дунд нь оновчтой цэг байдаг. Сурах бичиг
+``жишээ нь 100 буюу түүнээс бага'' гэж санал болгодог --- бидний хэмжилт
+үүнийг баталсан.
+
+\subsection{Mergesort ба Quicksort --- зарчмын ялгаа}
+\begin{center}
+\small
+\begin{tabular}{L{3.0cm}L{5.6cm}L{5.6cm}}
+\toprule
+& \textbf{Mergesort} & \textbf{Quicksort} \\
+\midrule
+Гол ажил хаана & Хуваалтын \emph{дараа} (merge, $O(n)$) &
+Хуваалтын \emph{өмнө} (partition, $O(n)$) \\
+Хуваалт & Үргэлж яг тэнцүү & Pivot-оос хамаарна \\
+Модны хэлбэр & Төгс тэнцвэртэй, гүн $=\log_2(n/k)$ & Тэгш бус, гүн нь
+pivot-ийн чанараас хамаарна \\
+Нэмэлт санах ой & $O(n)$ туслах массив & $O(\log n)$ стек \\
+Параллельчлалын саад & \emph{merge} цуваа байна & Бараг байхгүй \\
+Хамгийн муу тохиолдол & $O(n\log n)$ баталгаатай & $O(n^2)$ (pivot муу үед) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Гурван талт хуваалт (Dutch national flag)}
+Энгийн хоёр талт хуваалт нь \emph{давхардсан утгыг} зохицуулж чаддаггүй.
+Бүх элемент ижил бол нэг тал нь хоосон, нөгөө нь $n-1$ болж, рекурсийн гүн
+$O(n)$ --- стек халина. Dijkstra-гийн гурван талт хуваалт мужийг
+\emph{гурав} хуваана:
+\[
+\underbrace{a[lo..lt)}_{< v} \quad
+\underbrace{a[lt..gt]}_{= v \;\text{(эцсийн байрандаа)}} \quad
+\underbrace{a(gt..hi)}_{> v}
+\]
+Тэнцүү хэсгийг дахин хөндөхгүй тул бүх элемент ижил үед \emph{нэг} хуваалтаар
+ажил дуусна.

@@ -1,0 +1,168 @@
+\newpage
+\section{Системийн зохиомж}
+
+\subsection{Компонентууд}
+\begin{center}
+\begin{tikzpicture}[x=1cm,y=1cm,
+ b/.style={draw=accent,fill=accent!10,rounded corners=3pt,font=\scriptsize,
+           minimum height=8mm,text width=3.0cm,align=center},
+ g/.style={draw=gray!60,fill=gray!8,rounded corners=3pt,font=\scriptsize,
+           minimum height=8mm,text width=3.0cm,align=center}]
+\node[b] (ui)  at (0,0)     {\textbf{MainWindow}\\удирдлага, статистик};
+\node[b] (tp)  at (4.2,0)   {\textbf{TreePanel}\\рекурсийн мод зурах};
+\node[g] (cfg) at (0,-1.7)  {\textbf{RunConfig}\\параметр + шалгалт};
+\node[g] (run) at (4.2,-1.7){\textbf{SortRunner}\\туршилт ажиллуулах};
+\node[g] (alg) at (2.1,-3.4){\textbf{MergesortAction}\\\textbf{QuicksortAction}};
+\node[g] (seq) at (6.6,-3.4){\textbf{SequentialSort}\\insertion, merge, partition3};
+\node[g] (tr)  at (-2.3,-3.4){\textbf{TraceRecorder}\\thread-safe бүртгэл};
+\node[g] (dg)  at (-2.3,-1.7){\textbf{DataGenerator}\\өгөгдөл үүсгэх/задлах};
+\draw[-Stealth] (ui) -- (cfg);
+\draw[-Stealth] (cfg) -- (run);
+\draw[-Stealth] (run) -- (alg);
+\draw[-Stealth] (alg) -- (seq);
+\draw[-Stealth] (alg) -- (tr);
+\draw[-Stealth] (tr) to[bend left=12] (tp);
+\draw[-Stealth] (run) -- (tp);
+\draw[-Stealth] (dg) -- (run);
+\end{tikzpicture}
+\end{center}
+
+\textbf{Гол зохиомжийн зарчим:} \emph{алгоритмын давхарга нь UI-ээс бүрэн
+хамааралгүй}. \texttt{SortRunner} нь \texttt{RunConfig} авч \texttt{RunResult}
+буцаана; Swing-ийн ямар ч класс импортлодоггүй. Иймээс \texttt{--headless},
+\texttt{--bench}, тестийн багц гурвуулаа дэлгэцгүйгээр ажиллана.
+
+\subsection{Өгөгдлийн урсгал}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item Хэрэглэгч UI-аас параметр өгнө $\to$ \texttt{RunConfig}.
+  \item \texttt{RunConfig.validate()} --- хүчингүй утгыг \emph{энд} барьж,
+        ойлгомжтой мессеж шиднэ.
+  \item \texttt{DataGenerator} массив үүсгэнэ (эсвэл хэрэглэгчийн мөрийг задална).
+  \item \textbf{Жишиг хэмжилт}: ижил алгоритм, ижил threshold-оор
+        \emph{нэг урсгалаар} эрэмбэлж хугацааг тэмдэглэнэ.
+  \item \textbf{Fork-join хэмжилт}: \texttt{ForkJoinPool}-д даалгавар өгнө.
+        \texttt{compute()} дуудлага бүр \texttt{TraceRecorder}-т зангилаа нэмнэ.
+  \item \textbf{Шалгалт}: \texttt{Arrays.sort}-ын үр дүнтэй тулгана.
+  \item \texttt{RunResult} $\to$ UI: \texttt{TreePanel} мод зурна, статистик
+        самбарт тоонууд гарна.
+\end{enumerate}
+
+\subsection{Бүртгэлийн синхрончлол}
+\texttt{compute()} нь олон урсгалаас \emph{зэрэг} дуудагддаг тул бүртгэл
+thread-safe байх ёстой. Цоож ашиглавал хэмжилтийг гажуудуулах тул цоожгүй
+бүтэц сонгосон:
+\begin{center}
+\small
+\begin{tabular}{lL{10.0cm}}
+\toprule
+\texttt{AtomicInteger} & Зангилааны дугаарыг атомикаар олгоно
+(\texttt{getAndIncrement}) --- цоожгүй \\
+\texttt{ConcurrentLinkedQueue} & Зангилааг нэмэх нь lock-free \\
+\texttt{volatile} талбарууд & Нэг урсгал бичээд өөр урсгал (UI) уншина ---
+харагдах байдлыг баталгаажуулна \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Хэрэгжилт}
+
+\subsection{Хэл, сан, орчин}
+Java 21 (хэл: Java 17 түвшний боломжууд). \textbf{Гадны сан ашиглаагүй} ---
+\texttt{java.util.concurrent} ба Swing нь JDK-ийн бүрэлдэхүүн. Build хэрэгсэл
+шаардлагагүй: \texttt{javac} хангалттай.
+
+\subsection{Mergesort --- гол функц}
+\begin{lstlisting}
+@Override
+protected void compute() {
+    TraceNode node = tr.open(parentId, lo, hi, depth, a);
+    int myId = (node == null) ? -1 : node.id;
+
+    if (hi - lo <= threshold) {                 // ===== НАВЧ =====
+        SequentialSort.insertionSort(a, lo, hi);
+        tr.close(node, true, a);
+        return;
+    }
+
+    int mid = lo + (hi - lo) / 2;               // үргэлж ТЭНЦҮҮ хуваагдана
+    invokeAll(                                   // = fork + compute + join
+        new MergesortAction<>(a, tmp, lo,  mid, threshold, tr, myId, depth + 1),
+        new MergesortAction<>(a, tmp, mid, hi,  threshold, tr, myId, depth + 1));
+
+    SequentialSort.merge(a, tmp, lo, mid, hi);  // нэгтгэх нь ПАРАЛЛЕЛЬЧЛАГДАХГҮЙ
+    tr.close(node, false, a);
+}
+\end{lstlisting}
+
+\texttt{merge} дотор нэг оновчлол бий: \texttt{if (a[mid-1] <= a[mid]) return;}
+--- хоёр хэсэг аль хэдийн зөв дараалалтай бол хуулалт хийхгүй. Эрэмбэлэгдсэн
+өгөгдөл дээр энэ нь ажиллах хугацааг 153 мс-ээс \textbf{6.8 мс} болгон бууруулсан
+(Хүснэгт~\ref{tab:pattern}).
+
+\subsection{Quicksort --- гол функц}
+\begin{lstlisting}
+int[] r = SequentialSort.partition3(a, lo, hi);   // ЦУВАА ажил
+int ll = lo,     lr = r[0];                       // pivot-оос БАГА хэсэг
+int rl = r[1]+1, rr = hi;                         // pivot-оос ИХ хэсэг
+// r[0]..r[1] нь pivot-тай тэнцүү -- эцсийн байрандаа, дахин хөндөхгүй
+
+boolean hasL = lr - ll > 0, hasR = rr - rl > 0;
+if (hasL && hasR) {
+    invokeAll(new QuicksortAction<>(a, ll, lr, threshold, tr, myId, depth + 1),
+              new QuicksortAction<>(a, rl, rr, threshold, tr, myId, depth + 1));
+} else if (hasL) {
+    new QuicksortAction<>(a, ll, lr, threshold, tr, myId, depth + 1).compute();
+} else if (hasR) {
+    new QuicksortAction<>(a, rl, rr, threshold, tr, myId, depth + 1).compute();
+}
+\end{lstlisting}
+Хоосон тал үүсвэл даалгавар \emph{үүсгэхгүй} --- мод цэвэрхэн болж, дэмий
+fork хийхгүй.
+
+\subsection{Pivot сонголт --- илрүүлсэн алдаа ба засвар}
+Эхний хувилбарт медиан-3-ыг (эхний, дунд, сүүлчийн элемент) ашигласан бөгөөд
+медианыг \texttt{lo} байрлалд \emph{урьдчилан зөөдөг} байв. Туршилтаар
+эрэмбэлэгдсэн өгөгдөл дээр Quicksort \textbf{2310 мс} зарцуулж, модны гүн
+хамгаалалтын хязгаар (48)-д хүрч байлаа.
+
+\textbf{Шалтгаан.} Урьдчилсан зөөлт нь хамгийн бага элементийг хэсгийн
+\emph{төгсгөлд} үлдээдэг. Дараагийн түвшинд медиан-3 нь (бага, дунд,
+\emph{хамгийн бага}) гурвын медианыг --- өөрөөр хэлбэл бараг хамгийн бага
+утгыг --- сонгоно. Хуваалт $1 : n-2$ болж, \emph{энэ хэв маяг түвшин бүрт
+давтагдана}. Үр дүнд нь гүн $O(n)$.
+
+\textbf{Засвар.} Pivot-ийн \emph{байрлалуудыг} $(lo, hi)$-ээс гаргасан
+SplitMix хэш-ээр сонгоно:
+\begin{lstlisting}
+private static int pick(int lo, int hi, int k) {
+    long h = lo * 0x9E3779B97F4A7C15L ^ hi * 0xBF58476D1CE4E5B9L
+             ^ k * 0x94D049BB133111EBL;
+    h ^= (h >>> 31); h *= 0x7FB5D329728EA185L; h ^= (h >>> 29);
+    return lo + (int) Math.floorMod(h, (long) (hi - lo));
+}
+\end{lstlisting}
+Хэш нь өгөгдлийн агуулгатай ямар ч хамааралгүй тул дээрх давхарлалыг тасална.
+Мөн зөвхөн $(lo, hi)$-ээс хамаардаг тул үр дүн \textbf{давтагдана} --- ижил
+тохиргоо ижил мод өгнө.
+
+\textbf{Үр дүн:} эрэмбэлэгдсэн өгөгдөл дээр 2310 мс $\to$ \textbf{196 мс},
+гүн $48 \to 27$.
+
+\subsection{Стекийн хамгаалалт}
+Квиксортын гүн онолын хувьд $O(n)$ болох магадлал үлддэг тул
+\texttt{MAX\_PARALLEL\_DEPTH = 48} хязгаар тавьсан: түүнээс цааш
+\texttt{quicksort3()} гэсэн \emph{давталттай} (tail-call eliminated) нэг урсгалт
+хувилбар руу шилжинэ. Тэр нь бага талыг рекурсээр, их талыг давталтаар
+боловсруулдаг тул стекийн гүн $O(\log n)$-оос хэтрэхгүй.
+
+\subsection{Рекурсийн модны байрлуулалт}
+Зангилааны дугаар нь \emph{үүсэх дарааллаар} олгогддог бөгөөд олон урсгал
+зэрэг ажилладаг тул \textbf{дугаарын дараалал нь модны бүтцийг илэрхийлэхгүй}.
+Иймээс эцгийн дугаараар хүүхдүүдийг бүлэглэж, \texttt{lo}-оор эрэмбэлж,
+гүнзгийрүүлсэн хайлтаар (DFS) байрлалыг тооцоолно:
+\begin{itemize}[nosep,leftmargin=*]
+  \item навч бүр дараалсан $x$ байрлал эзэлнэ;
+  \item дотоод зангилааны $x$ нь \emph{хүүхдүүдийнхээ дундаж};
+  \item $y$ нь рекурсийн гүн.
+\end{itemize}
+Ингэснээр ирмэгүүд огтлолцохгүй, мод уншигдахуйц болно.

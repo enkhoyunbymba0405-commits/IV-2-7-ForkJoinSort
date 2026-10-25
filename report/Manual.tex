@@ -1,0 +1,438 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\sloppy
+\setlength{\emergencystretch}{2em}
+\usepackage[margin=2.1cm]{geometry}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{array}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,fit,shapes.geometric}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\usepackage{caption}
+\captionsetup{font=small,labelfont=bf}
+% babel нь \begin{document}-д эдгээрийг дардаг тул AtBeginDocument ашиглана
+\AtBeginDocument{%
+  \renewcommand{\contentsname}{Гарчиг}%
+  \renewcommand{\tablename}{Хүснэгт}%
+  \renewcommand{\figurename}{Зураг}%
+  \renewcommand{\refname}{Ашигласан материал}%
+}
+
+\definecolor{codebg}{RGB}{246,247,249}
+\definecolor{accent}{RGB}{31,78,121}
+
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  backgroundcolor=\color{codebg},
+  frame=single, rulecolor=\color{gray!40},
+  keywordstyle=\color{accent}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  breaklines=true, columns=fullflexible, keepspaces=true,
+  extendedchars=true, inputencoding=utf8,
+  literate=
+    {А}{{\CYRA}}1
+    {Б}{{\CYRB}}1
+    {В}{{\CYRV}}1
+    {Г}{{\CYRG}}1
+    {Д}{{\CYRD}}1
+    {Е}{{\CYRE}}1
+    {Ё}{{\CYRYO}}1
+    {Ж}{{\CYRZH}}1
+    {З}{{\CYRZ}}1
+    {И}{{\CYRI}}1
+    {Й}{{\CYRISHRT}}1
+    {К}{{\CYRK}}1
+    {Л}{{\CYRL}}1
+    {М}{{\CYRM}}1
+    {Н}{{\CYRN}}1
+    {О}{{\CYRO}}1
+    {Ө}{{\CYROTLD}}1
+    {П}{{\CYRP}}1
+    {Р}{{\CYRR}}1
+    {С}{{\CYRS}}1
+    {Т}{{\CYRT}}1
+    {У}{{\CYRU}}1
+    {Ү}{{\CYRY}}1
+    {Ф}{{\CYRF}}1
+    {Х}{{\CYRH}}1
+    {Ц}{{\CYRC}}1
+    {Ч}{{\CYRCH}}1
+    {Ш}{{\CYRSH}}1
+    {Щ}{{\CYRSHCH}}1
+    {Ъ}{{\CYRHRDSN}}1
+    {Ы}{{\CYRERY}}1
+    {Ь}{{\CYRSFTSN}}1
+    {Э}{{\CYREREV}}1
+    {Ю}{{\CYRYU}}1
+    {Я}{{\CYRYA}}1
+    {а}{{\cyra}}1
+    {б}{{\cyrb}}1
+    {в}{{\cyrv}}1
+    {г}{{\cyrg}}1
+    {д}{{\cyrd}}1
+    {е}{{\cyre}}1
+    {ё}{{\cyryo}}1
+    {ж}{{\cyrzh}}1
+    {з}{{\cyrz}}1
+    {и}{{\cyri}}1
+    {й}{{\cyrishrt}}1
+    {к}{{\cyrk}}1
+    {л}{{\cyrl}}1
+    {м}{{\cyrm}}1
+    {н}{{\cyrn}}1
+    {о}{{\cyro}}1
+    {ө}{{\cyrotld}}1
+    {п}{{\cyrp}}1
+    {р}{{\cyrr}}1
+    {с}{{\cyrs}}1
+    {т}{{\cyrt}}1
+    {у}{{\cyru}}1
+    {ү}{{\cyry}}1
+    {ф}{{\cyrf}}1
+    {х}{{\cyrh}}1
+    {ц}{{\cyrc}}1
+    {ч}{{\cyrch}}1
+    {ш}{{\cyrsh}}1
+    {щ}{{\cyrshch}}1
+    {ъ}{{\cyrhrdsn}}1
+    {ы}{{\cyrery}}1
+    {ь}{{\cyrsftsn}}1
+    {э}{{\cyrerev}}1
+    {ю}{{\cyryu}}1
+    {я}{{\cyrya}}1,
+  xleftmargin=0.8em, framexleftmargin=0.8em,
+  language=Java, showstringspaces=false
+}
+\titleformat{\section}{\Large\bfseries\color{accent}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{0.6em}{}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\setlength{\headheight}{14pt}
+\setlength{\parskip}{3pt}
+\fancyhead[L]{\small IV-2-7 --- Fork-Join Sorting Application}
+\fancyhead[R]{\small Manual}
+
+\begin{document}
+\begin{titlepage}
+\centering
+\vspace*{2.5cm}
+{\large F.CSM302 --- Үйлдлийн систем · Бие даалт 1\par}
+\vspace{1.4cm}
+{\Huge\bfseries\color{accent} Хэрэглэгчийн гарын авлага\par}
+\vspace{0.5cm}
+{\Large Fork-Join Sorting Application\par}
+\vspace{0.3cm}
+{\large Хуваарилалтын код: \textbf{IV-2-7} · Сэдэв №7\par}
+{\large UI дүрслэл: Recursion tree\par}
+\vfill
+{\large 2026 оны 10-р сар}
+\vspace{2cm}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{Хэрэглэгчийн заавар}
+
+\subsection{Программын зорилго}
+Энэхүү программ нь Java-гийн \textbf{Fork/Join} параллель API ашиглан массивыг
+эрэмбэлэх хоёр алгоритмыг (Mergesort, Quicksort) хэрэгжүүлж, тэдгээрийн
+\emph{рекурсив задралыг} модоор харуулна.
+
+Зорилго нь зөвхөн эрэмбэлэх биш --- \emph{параллель ажил хэрхэн хуваагдаж,
+аль урсгал ямар хэсгийг гүйцэтгэж, threshold ямар нөлөөтэйг нүдээр харуулах}
+явдал юм.
+
+\subsection{Дэмжих орчин}
+\begin{center}
+\small
+\begin{tabular}{lL{10.5cm}}
+\toprule
+Шаардлага & Утга \\
+\midrule
+Java & \textbf{JDK 17 буюу түүнээс дээш}. Туршилтыг JDK 21.0.12 дээр хийсэн. \\
+Үйлдлийн систем & Linux, macOS, Windows --- Java ажиллах аль ч орчин \\
+Гадны сан & \textbf{Байхгүй}. Зөвхөн стандарт JDK. Интернэт шаардлагагүй. \\
+Дэлгэц & График интерфейст шаардлагатай. Дэлгэцгүй орчинд \texttt{--headless}
+горим бий. \\
+Санах ой & $n = 10^6$ хүртэл өгөгдмөл тохиргоогоор хангалттай \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Суулгах ба нээх алхам}
+
+\textbf{Linux / macOS}
+\begin{lstlisting}[language=bash]
+git clone <repo-url>
+cd IV-2-7-ForkJoinSort
+./build.sh          # компайл (10-20 секунд)
+./run.sh            # цонх нээгдэнэ
+\end{lstlisting}
+
+\textbf{Windows}
+\begin{lstlisting}[language=bash]
+git clone <repo-url>
+cd IV-2-7-ForkJoinSort
+build.bat
+run.bat
+\end{lstlisting}
+
+Суулгац (installer) байхгүй --- зөвхөн компайл хийгээд ажиллуулна.
+
+\subsection{Оролт ба тохиргоо}
+Цонхны зүүн талд бүх тохиргоо байрлана. Аль нэгийг өөрчилсний дараа
+\textbf{Ажиллуулах} товчийг дарна.
+
+\begin{center}
+\small
+\begin{tabular}{L{3.4cm}L{5.0cm}L{6.0cm}}
+\toprule
+Тохиргоо & Утга & Нөлөө \\
+\midrule
+\textbf{Алгоритм} & Mergesort эсвэл Quicksort &
+Модны \emph{хэлбэрийг} өөрчилнө: Mergesort үргэлж тэнцүү, Quicksort
+pivot-оос хамаарч тэгш бус \\
+\textbf{Өгөгдлийн хэв маяг} & Санамсаргүй, Эрэмбэлэгдсэн, Урвуу,
+Цөөн ялгаатай, Бүгд ижил &
+Quicksort-ийн модонд их нөлөөтэй; Mergesort-д нөлөөгүй \\
+\textbf{Массивын хэмжээ $n$} & 0 --- 5\,000\,000 &
+Модны \emph{өргөн} \\
+\textbf{Threshold} & $\ge 1$ &
+Модны \emph{гүн}. Жижиг бол мод өндөр, том бол намхан \\
+\textbf{Урсгалын тоо} & 1 --- 256 &
+Модны \emph{өнгөний} тоо (ажилчин урсгал бүр өөр өнгөтэй) \\
+\textbf{Seed} & бүхэл тоо &
+Ижил seed $\Rightarrow$ ижил өгөгдөл $\Rightarrow$ давтагдах үр дүн \\
+\textbf{Өөрийн оролт} & \texttt{7, 12, 19, 3} &
+Бичсэн тохиолдолд дээрх хэмжээ ба хэв маягийг \emph{дардаг} \\
+\textbf{Алхамчилсан горим} & тэмдэглэгээ &
+Мод шууд биш, гүйлгэгчээр алхам алхмаар ургана \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Ажиллуулах, зогсоох, reset хийх}
+\begin{itemize}[nosep,leftmargin=*]
+  \item \textbf{Ажиллуулах} --- одоогийн тохиргоогоор эрэмбэлж, мод зурна.
+        Үйлдэл хормын дотор дуусдаг тул зогсоох товч шаардлагагүй
+        ($n = 10^6$ үед нэг секунд орчим).
+  \item \textbf{Модыг багтаах} --- зум, байрлалыг анхны байдалд оруулж модыг
+        цонхонд бүтнээр нь харуулна.
+  \item \textbf{Модыг PNG болгож хадгалах} --- одоогийн модыг $1600\times900$
+        зураг болгож хадгална.
+  \item \textbf{Анхны тохиргоо (Reset)} --- бүх утгыг анхны байдалд нь
+        буцааж, модыг цэвэрлэнэ.
+\end{itemize}
+
+\textbf{Хулганы үйлдэл:} чирэх $=$ модыг зөөх, дугуй эргүүлэх $=$ томруулах/жижигрүүлэх,
+зангилаа дээр дарах $=$ дэлгэрэнгүйг баруун талд харуулах, зангилаа дээр
+хулганаа барих $=$ товч тайлбар.
+
+\subsection{Дүрслэлийн тэмдэг, өнгө, төлөв}
+
+\begin{center}
+\small
+\begin{tabular}{L{4.2cm}L{10.3cm}}
+\toprule
+Дүрслэл & Утга \\
+\midrule
+Нэг тэгш өнцөгт & \texttt{compute()} функцийн НЭГ дуудлага \\
+Шошго \texttt{[lo,hi) n} & Тухайн дуудлагын хариуцсан муж ба элементийн тоо \\
+Босоо байрлал & Рекурсийн гүн (дээд талд үндэс, доош хүүхдүүд) \\
+\textbf{Өнгө} & Аль \emph{ажилчин урсгал} гүйцэтгэсэн. Өнгө бүр нэг
+\texttt{ForkJoinPool-1-worker-$k$} \\
+\textbf{Дүүрэн өнгөтэй} & \emph{Навч} --- threshold хүрч, рекурс зогсож
+insertion sort ажилласан \\
+\textbf{Цайвар өнгөтэй} & \emph{Дотоод} зангилаа --- цааш хуваагдсан \\
+Хар зузаан хүрээ & Таны сонгосон зангилаа \\
+Саарал шугам & Эцэг--хүүхдийн холбоо (fork) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Баруун талын самбарт: алгоритм, хэмжээ, threshold, зангилааны тоо, навчны тоо,
+модны гүн, fork-join ба нэг урсгалт хугацаа, \textbf{хурдасгалт}, үр дүн зөв
+эсэх, урсгал тус бүрийн гүйцэтгэсэн зангилааны тоо.
+
+\subsection{Жишээ 1 --- номын Figure 4.27}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item \textbf{Номын жишээ (Figure 4.27)} товчийг дарна.
+  \item \texttt{Threshold} $= 2$, \texttt{Алгоритм} $=$ Mergesort.
+  \item \textbf{Ажиллуулах}.
+\end{enumerate}
+Хүлээгдэх үр дүн: 11 зангилаатай \emph{тэгш хэмтэй} мод, үндэс \texttt{[0,10) 10},
+эцсийн массив \texttt{[2, 3, 4, 6, 7, 8, 12, 15, 18, 19]}, төлөв мөрөнд
+``үр дүн ЗӨВ''.
+
+\begin{figure}[h]\centering
+\includegraphics[width=0.78\textwidth]{../docs/images/fig_book_merge.png}
+\caption{Жишээ 1 --- Mergesort, номын 10 элементтэй жишээ, threshold $=2$.
+Мод бүрэн тэгш хэмтэй. Хоёр өнгө нь хоёр ажилчин урсгалыг заана.}
+\end{figure}
+
+\subsection{Жишээ 2 --- ижил өгөгдөл дээр Quicksort}
+Зөвхөн \texttt{Алгоритм}-ыг Quicksort болгоод дахин ажиллуулна.
+
+\begin{figure}[h]\centering
+\includegraphics[width=0.70\textwidth]{../docs/images/fig_book_quick.png}
+\caption{Жишээ 2 --- Quicksort, ижил өгөгдөл. Мод \emph{тэгш бус}: хуваалт
+pivot-оос хамаарна. Зарим зангилаа ганц хүүхэдтэй --- нөгөө тал нь хоосон болсон.}
+\end{figure}
+
+\subsection{Жишээ 3 --- threshold-ийн нөлөө}
+$n = 400$, Mergesort дээр threshold-ийг $25 \to 5$ болгоход мод \emph{хоёр
+түвшин өндөрсөж}, навчны тоо дөрөв дахин нэмэгдэнэ. Энэ бол рекурсийн гүн
+threshold-оос хэрхэн хамаарахын шууд нотолгоо.
+
+\subsection{Түгээмэл алдаа ба шийдэл}
+\begin{center}
+\small
+\begin{tabular}{L{5.2cm}L{9.3cm}}
+\toprule
+Алдаа & Шийдэл \\
+\midrule
+\texttt{javac: command not found} & JDK суугаагүй эсвэл \texttt{PATH}-д байхгүй.
+\texttt{java -version} шалгана. \\
+\texttt{UnsupportedClassVersionError} & JDK 17-оос доош хувилбар. Шинэчилнэ. \\
+Цонх нээгдэхгүй, \texttt{HeadlessException} & Дэлгэцгүй орчин (SSH).
+\texttt{--headless} эсвэл \texttt{--render} горимыг ашиглана. \\
+``Threshold хамгийн багадаа 1 байна'' & 0 эсвэл сөрөг утга оруулсан.
+0 бол рекурс хэзээ ч зогсохгүй тул зөвшөөрөхгүй. \\
+``Бүхэл тоо биш утга'' & Өөрийн оролтод тоо биш тэмдэгт байна. Алдааны
+мэдээлэлд хэд дэх байрлалд байгааг заана. \\
+Мод хэтэрхий нягт, уншигдахгүй & Дугуйгаар томруулах, эсвэл $n$-ийг
+багасгах / threshold-ийг өсгөх. \\
+\texttt{StackOverflowError} & Маш жижиг threshold ($=1$) ба маш том $n$ үед.
+\texttt{java -Xss16m} гэж стекийг томсгоно (\texttt{run.sh} дотор аль хэдийн бий). \\
+Хурдасгалт 1-ээс бага & Threshold хэт жижиг эсвэл $n$ хэт бага --- fork-ийн
+зардал давамгайлж байна. Threshold-ийг 50--500 болгоно. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\newpage
+\section{Operational заавар (шүүмжлэгчид зориулав)}
+
+\subsection{Repository clone хийх}
+\begin{lstlisting}[language=bash]
+git clone <repo-url>
+cd IV-2-7-ForkJoinSort
+\end{lstlisting}
+
+\subsection{Орчин, компайлер, хувилбар}
+\begin{center}
+\small
+\begin{tabular}{lL{9.5cm}}
+\toprule
+Шаардлага & Хувилбар \\
+\midrule
+JDK & 17+ (хөгжүүлэлт ба туршилт: OpenJDK \textbf{21.0.12}) \\
+Build хэрэгсэл & \textbf{Шаардлагагүй} --- зөвхөн \texttt{javac}. Maven, Gradle хэрэггүй. \\
+Dependency & \textbf{Байхгүй}. Интернэт холболт шаардлагагүй. \\
+OS & Linux (турших хийсэн), macOS, Windows \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Build ба Run}
+\begin{lstlisting}[language=bash]
+./build.sh                   # эсвэл: build.bat (Windows)
+./run.sh                     # график интерфейс
+./run.sh --headless -n 100000 -t 100 -a merge
+./run.sh --bench             # хэмжилтийн хүснэгт
+./run.sh --render tree.png -n 400 -t 25 -a quick
+./test.sh                    # бүх тест
+\end{lstlisting}
+
+Скрипт ашиглахгүй бол гараар:
+\begin{lstlisting}[language=bash]
+mkdir -p out
+javac -encoding UTF-8 -d out $(find src -name "*.java") tests/TestSuite.java
+java -Xss16m -cp out forkjoinsort.Main --headless -n 1000
+\end{lstlisting}
+
+\textbf{Windows-ийн консолд кирилл үсэг:} \texttt{chcp 65001} гэж ажиллуулна
+(\texttt{run.bat} дотор аль хэдийн бий).
+
+\subsection{Үндсэн тестийн өгөгдөл}
+\begin{center}
+\small
+\begin{tabular}{lL{6.2cm}L{5.0cm}}
+\toprule
+Файл & Агуулга & Хүлээгдэх үр дүн \\
+\midrule
+\texttt{examples/book\_figure\_4\_27.txt} & \texttt{7, 12, 19, 3, 18, 4, 2, 6, 15, 8}
+& \texttt{2, 3, 4, 6, 7, 8, 12, 15, 18, 19} \\
+\texttt{examples/reversed.txt} & \texttt{10 … 1} & \texttt{1 … 10} \\
+\texttt{examples/all\_equal.txt} & найман \texttt{9} & өөрчлөгдөхгүй, Quicksort-д
+мод \textbf{ганц} зангилаатай \\
+\texttt{examples/single.txt} & \texttt{5} & \texttt{5}, мод 1 зангилаа \\
+\texttt{examples/empty.txt} & хоосон & алдаагүй дуусна, мод хоосон \\
+\texttt{examples/invalid.txt} & \texttt{1, abc, 3} & \emph{ойлгомжтой алдааны
+мэдээлэл} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Оролтыг UI-ийн ``Өөрийн оролт'' талбарт буулгаж тавина, эсвэл:
+\begin{lstlisting}[language=bash]
+./run.sh --headless -i "$(cat examples/book_figure_4_27.txt)" -t 2
+\end{lstlisting}
+
+\subsection{Нэмэлт boundary ба error тест}
+\begin{lstlisting}[language=bash]
+./run.sh --headless -n 0                      # хоосон массив
+./run.sh --headless -n 1                      # нэг элемент
+./run.sh --headless -n 10 -t 1000             # threshold > n -> ганц навч
+./run.sh --headless -n 100000 -d ALL_EQUAL -a quick   # давхардсан утга
+./run.sh --headless -n 100000 -d SORTED    -a quick   # аль хэдийн эрэмбэлэгдсэн
+./run.sh --headless -i "1, abc, 3"            # алдаатай оролт
+./run.sh --headless -n 1000 -t 0              # хүчингүй threshold
+\end{lstlisting}
+
+\subsection{Хүлээгдсэн үр дүн}
+\begin{itemize}[nosep,leftmargin=*]
+  \item \texttt{./test.sh} $\Rightarrow$ \texttt{=== ДҮН: 58 давсан, 0 унасан ===},
+        exit code \textbf{0}.
+  \item Аливаа \texttt{--headless} ажиллуулалтад \texttt{Зөв эсэх : ЗӨВ}.
+        Буруу бол exit code \textbf{2}.
+  \item Хүчингүй оролтод Java-гийн stack trace биш, \emph{монгол хэлээр
+        ойлгомжтой} мессеж гарна.
+  \item \texttt{--bench} $\Rightarrow$ CSV хэлбэрийн гурван хүснэгт.
+        Хоёр цөмт машин дээр threshold $\ge 50$ үед хурдасгалт $\approx 2.0$.
+\end{itemize}
+
+\subsection{Known issues}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item \textbf{Модны бүртгэл хурдад нөлөөлнө.} Зангилаа бүрийг бүртгэх нь
+        нэмэлт зардал үүсгэдэг тул \texttt{--bench} нь
+        \texttt{--no-trace} горимоор хэмждэг. UI-д бүртгэл \emph{үргэлж} асаалттай
+        байдаг тул тэнд харагдах хугацааг цэвэр хэмжилт гэж үзэж болохгүй.
+  \item \textbf{Маш том мод.} $n = 10^6$, threshold $= 10$ үед 200\,000 орчим
+        зангилаа үүсч, зурах нь удаашрана. Дүрслэлд $n \le 5000$ хооронд
+        ажиллуулахыг зөвлөнө; хурдны хэмжилтэд \texttt{--bench} ашиглана.
+  \item \textbf{Зангилааны утгуудыг зөвхөн 48-аас бага мужид хадгална}
+        (санах ойн хязгаарлалт). Түүнээс том муж дээр дарвал утгууд харагдахгүй.
+  \item \textbf{Хурдасгалт нь машинаас хамаарна.} Хөгжүүлэлтийн орчин
+        \textbf{хоёр} цөмтэй байсан тул дээд хурдасгалт $\approx 2$. Олон цөмтэй
+        машин дээр илүү өндөр гарна.
+  \item \textbf{\texttt{Integer} объектын массив.} Сурах бичиг
+        \texttt{Comparable} интерфейсийг шаарддаг тул \texttt{int[]} биш
+        \texttt{Integer[]} ашигласан. Энэ нь boxing-ийн улмаас анхдагч төрлөөс
+        удаан боловч даалгаврын шаардлагыг хангана.
+\end{enumerate}
+
+\end{document}

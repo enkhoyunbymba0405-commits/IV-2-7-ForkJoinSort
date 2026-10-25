@@ -1,0 +1,40 @@
+# Цөмийн тоо: 2
+
+## Туршилт A — threshold-ийн нөлөө (n = 1,000,000, RANDOM)
+algorithm,threshold,parallel_ms,sequential_ms,speedup,nodes
+mergesort,1,435.0,354.5,0.81,0
+quicksort,1,298.9,513.7,1.72,0
+mergesort,10,266.3,308.5,1.16,0
+quicksort,10,228.7,490.8,2.15,0
+mergesort,50,179.1,356.3,1.99,0
+quicksort,50,230.8,460.3,1.99,0
+mergesort,100,226.8,417.4,1.84,0
+quicksort,100,320.3,651.4,2.03,0
+mergesort,500,708.2,1367.6,1.93,0
+quicksort,500,577.2,1116.1,1.93,0
+mergesort,1000,1243.5,2546.8,2.05,0
+quicksort,1000,999.3,1936.5,1.94,0
+mergesort,5000,4376.8,9021.0,2.06,0
+quicksort,5000,4199.9,7797.0,1.86,0
+
+## Туршилт B — урсгалын тооны нөлөө (n = 1,000,000, threshold = 100)
+algorithm,threads,parallel_ms,speedup
+mergesort,1,474.3,0.98
+quicksort,1,499.4,1.00
+mergesort,2,246.0,1.95
+quicksort,2,300.1,2.03
+mergesort,4,242.3,1.68
+quicksort,4,263.9,1.89
+
+## Туршилт C — өгөгдлийн хэв маягийн нөлөө (n = 500,000, threshold = 100)
+algorithm,pattern,parallel_ms,max_depth,nodes
+mergesort,RANDOM,153.3,13,16383
+quicksort,RANDOM,213.6,27,16941
+mergesort,SORTED,6.8,13,16383
+quicksort,SORTED,196.1,27,16903
+mergesort,REVERSED,101.9,13,16383
+quicksort,REVERSED,198.5,25,16773
+mergesort,FEW_UNIQUE,66.4,13,16383
+quicksort,FEW_UNIQUE,18.5,3,5
+mergesort,ALL_EQUAL,6.7,13,16383
+quicksort,ALL_EQUAL,1.7,0,1

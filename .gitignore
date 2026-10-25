@@ -1,0 +1,12 @@
+out/
+*.class
+sources.txt
+*.png
+!docs/images/*.png
+
+# LaTeX
+*.aux
+*.log
+*.out
+*.toc
+*.chk

@@ -1,0 +1,259 @@
+\fancyhead[L]{\small IV-2-7 $\to$ IV-2-10}
+\fancyhead[R]{\small Review}
+
+\begin{document}
+\begin{titlepage}
+\centering
+\vspace*{2.5cm}
+{\large F.CSM302 --- Үйлдлийн систем · Бие даалт 1\par}
+\vspace{1.4cm}
+{\Huge\bfseries\color{accent} Харилцан шүүмж\par}
+\vspace{1.0cm}
+{\large\begin{tabular}{rl}
+Шүүмжлэгч код: & \textbf{IV-2-7} \\[4pt]
+Шүүмжилсэн код: & \textbf{IV-2-10} \\[4pt]
+Төсөл: & The Sleeping Teaching Assistant \\[4pt]
+ & (Бүлэг 7, UI дүрслэл: Queue animation) \\[4pt]
+Огноо: & \rule{4cm}{0.4pt} \\
+\end{tabular}}
+\vfill
+{\large Шүүмжлэгч багийн гишүүд\par}
+\vspace{0.3cm}
+\begin{tabular}{ll}
+\toprule
+Оюутны код & Нэр \\
+\midrule
+B200910032 & Д.Дагиймаа \\
+B221940034 & Д.Оюунжаргал \\
+B231930001 & \\
+B241940014 & Г.Мягмарсүрэн \\
+B241940127 & О.Энх \\
+B242270084 & Э.Бүрэнбаяр \\
+\bottomrule
+\end{tabular}
+\vspace{2cm}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+%============================================================
+\section{Ажлын ойлголт}
+\emph{Зорилго ба хэрэгжилтийг ӨӨРИЙН үгээр 5--8 өгүүлбэрээр бич.
+Тайланг нь хуулж болохгүй --- ойлгосноо харуул.}
+
+\textbf{Бодлогын мөн чанар.} Sleeping Teaching Assistant нь сонгодог
+Sleeping Barber бодлогын хувилбар: нэг туслах багш оффисдоо унтаж байдаг;
+оюутан ирэхэд сэрж тусалдаг; завгүй бол оюутан коридорын гурван сандлын
+нэгэнд суудаг; сандал дүүрэн бол оюутан явж дараа эргэж ирдэг.
+
+\textbf{Синхрончлолын асуудал:}\\[3mm]
+\noindent\rule{\textwidth}{0.4pt}
+
+\vspace{2mm}\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Багийн шийдэл:}\\[3mm]
+\noindent\rule{\textwidth}{0.4pt}
+
+\vspace{2mm}\noindent\rule{\textwidth}{0.4pt}
+
+\vspace{2mm}\noindent\rule{\textwidth}{0.4pt}
+
+%============================================================
+\section{Туршилтын орчин}
+\begin{center}
+\small
+\begin{tabular}{lL{9.5cm}}
+\toprule
+Үзүүлэлт & Утга \\
+\midrule
+OS & \\
+Architecture & \\
+Compiler / runtime & \\
+Хувилбар & \\
+Dependency & \\
+Цөмийн тоо & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+%============================================================
+\section{Build ба Run}
+\emph{Manual-ийн алхмыг ӨӨРЧЛӨХГҮЙГЭЭР эхний оролдлогыг хий. Ажиллахгүй бол
+тэр нь өөрөө олдвор (finding).}
+
+\begin{center}
+\small
+\begin{tabular}{L{2.0cm}L{5.6cm}L{3.4cm}L{3.4cm}}
+\toprule
+Алхам & Команд & Хүлээгдсэн үр дүн & Бодит үр дүн \\
+\midrule
+Clone & & & \\[6pt]
+Build & & & \\[6pt]
+Run & & & \\[6pt]
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Manual-аас гадуур хийх шаардлагатай болсон өөрчлөлт:}\\[3mm]
+\noindent\rule{\textwidth}{0.4pt}
+
+%============================================================
+\section{Туршилт}
+
+\subsection{Үндсэн тест (тайланд бичсэнийг давтах)}
+\begin{center}
+\small
+\begin{tabular}{L{0.6cm}L{4.4cm}L{4.4cm}L{4.4cm}}
+\toprule
+\# & Оролт / тохиргоо & Хүлээгдсэн үр дүн & Бодит үр дүн \\
+\midrule
+1 & & & \\[6pt]
+2 & & & \\[6pt]
+3 & & & \\[6pt]
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Нэмэлт тест (дор хаяж НЭГ, өөрсдөө сонгосон)}
+\begin{center}
+\small
+\begin{tabular}{L{0.6cm}L{3.6cm}L{4.4cm}L{2.6cm}L{2.6cm}}
+\toprule
+\# & Оролт / тохиргоо & Яагаад сонгосон & Хүлээгдсэн & Бодит \\
+\midrule
+1 & сандал $= 0$ & Захын утга --- оюутан хэзээ ч суухгүй, шууд явах ёстой & & \\[6pt]
+2 & сандал $< 0$ & Хүчингүй оролт --- ойлгомжтой алдаа өгөх ёстой & & \\[6pt]
+3 & 50 оюутан зэрэг & Ачаалал --- дараалал халих эсэх & & \\[6pt]
+4 & үйлчилгээний хугацаа $= 0$ & Хил --- хуваарилалт гацах эсэх & & \\[6pt]
+\bottomrule
+\end{tabular}
+\end{center}
+
+%============================================================
+\section{Дүрслэлийн үнэлгээ}
+\emph{Багшийн оноосон дүрслэл: \textbf{Queue animation}.}
+
+\begin{center}
+\small
+\begin{tabular}{L{9.4cm}L{2.0cm}L{3.0cm}}
+\toprule
+Шалгах асуулт & Тийм/Үгүй & Нотолгоо \\
+\midrule
+Оролт, тохиргоог өөрчлөхөд дүрслэл шинэчлэгдэж байна уу? & & \\[5pt]
+Дараалал дахь оюутны тоо бодит төлөвтэй нийцэж байна уу? & & \\[5pt]
+TA-ийн төлөв (унтаж / тусалж) зөв харагдаж байна уу? & & \\[5pt]
+Тэмдэглэгээ, legend, нэгж ойлгомжтой юу? & & \\[5pt]
+Алхамчилж харах эсвэл эргэн шалгах боломжтой юу? & & \\[5pt]
+Дүрслэл нь алгоритмыг тайлбарлах \emph{нотолгоо} болж байна уу? & & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Дүгнэлт:}\\[3mm]
+\noindent\rule{\textwidth}{0.4pt}
+
+%============================================================
+\section{Давуу тал}
+\emph{Дор хаяж ХОЁР, тус бүр НОТОЛГООТОЙ. ``Сайхан болсон'' гэж бичихгүй ---
+юу, хаана, яаж гэдгийг зааж бич.}
+
+\textbf{1.}\\[3mm]
+\noindent\rule{\textwidth}{0.4pt}
+
+\vspace{1mm}\emph{Нотолгоо:}\\[3mm]
+\noindent\rule{\textwidth}{0.4pt}
+
+\vspace{3mm}
+\textbf{2.}\\[3mm]
+\noindent\rule{\textwidth}{0.4pt}
+
+\vspace{1mm}\emph{Нотолгоо:}\\[3mm]
+\noindent\rule{\textwidth}{0.4pt}
+
+%============================================================
+\newpage
+\section{Асуудал}
+\emph{Асуудал бүрийг дараах дарааллаар бич:}
+\begin{center}
+Нөхцөл $\to$ Давтах алхам $\to$ Хүлээгдсэн үр дүн $\to$ Бодит үр дүн
+$\to$ Нөлөө $\to$ Сайжруулах санал
+\end{center}
+
+\begin{center}
+\small
+\begin{tabular}{L{1.8cm}L{5.4cm}L{3.6cm}L{3.6cm}}
+\toprule
+Priority & Асуудал (давтах алхамтай) & Нөлөө & Сайжруулах санал \\
+\midrule
+Critical & & & \\[14pt]
+Major & & & \\[14pt]
+Minor & & & \\[14pt]
+Suggestion & & & \\[14pt]
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{center}
+\small
+\begin{tabular}{lL{11.0cm}}
+\toprule
+Түвшин & Утга \\
+\midrule
+Critical & Үндсэн функц ажиллахгүй эсвэл буруу үр дүн \\
+Major & Гол тест, дүрслэл, Manual ноцтой дутуу \\
+Minor & Үндсэн ажиллагаанд саад багатай чанарын асуудал \\
+Suggestion & Нэмэлт сайжруулалтын санал \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+%============================================================
+\section{Сайжруулах санал}
+\emph{Асуудал бүрт НЭГ хэрэгжүүлэх боломжтой санал. Удирдамжийн жишээ:}
+
+\begin{quote}
+\small
+\textbf{Сул:} ``Дүрслэлээ сайжруул.'' --- нотолгоо, нөлөө, хийх ажил тодорхойгүй.
+
+\textbf{Сайн:} ``Quantum $=0$ үед Run дарсны дараа програм давталтад орсон.
+Quantum $\le 0$ үед Run-ийг идэвхгүй болгож, хүчинтэй утгын тайлбар
+харуулах саналтай.''
+\end{quote}
+
+\textbf{1.}\\[3mm]
+\noindent\rule{\textwidth}{0.4pt}
+
+\vspace{3mm}\textbf{2.}\\[3mm]
+\noindent\rule{\textwidth}{0.4pt}
+
+\vspace{3mm}\textbf{3.}\\[3mm]
+\noindent\rule{\textwidth}{0.4pt}
+
+%============================================================
+\section{Дүгнэлт}
+\emph{Сайжруулах ГУРВАН гол зүйлийг эрэмбэлж бич.}
+
+\textbf{1.}\\[3mm]
+\noindent\rule{\textwidth}{0.4pt}
+
+\vspace{3mm}\textbf{2.}\\[3mm]
+\noindent\rule{\textwidth}{0.4pt}
+
+\vspace{3mm}\textbf{3.}\\[3mm]
+\noindent\rule{\textwidth}{0.4pt}
+
+\vspace{6mm}
+\noindent\textbf{Ерөнхий үнэлгээ:}\\[3mm]
+\noindent\rule{\textwidth}{0.4pt}
+
+%============================================================
+\vfill
+\noindent\rule{\textwidth}{0.4pt}\\[2pt]
+\small
+\textbf{Рубрик (өөрийгөө шалгах).}
+Дахин ажиллуулах чадвар 20 · Зөв ажиллагааны шинжилгээ 20 ·
+Туршилт ба UI дүрслэл 20 · Тайлан, Manual, repository 15 ·
+Техникийн шүүмж 20 · Reply ба PDF бүрдэл 5.
+
+\end{document}
