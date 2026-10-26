@@ -153,11 +153,12 @@ $ ./test.sh
 
 | Оюутны код | Нэр | Хариуцсан ажил |
 |---|---|---|
-| B241940127 | О.Энх | **Багийн ахлагч.** Fork/Join цөм — `MergesortAction`, `QuicksortAction`, `SequentialSort`, `SortRunner`; нэгтгэл, тайлан, GitHub repo / tag / release |
+| B241940127 | О.Энх | **Багийн ахлагч.** Fork/Join цөм — `MergesortAction`, `QuicksortAction`, `SequentialSort`, `SortRunner`; нэгтгэл, тайлан |
 | B200910032 | Д.Дагиймаа | UI — `ui/TreePanel` рекурсийн модны зураглал, зангилаа сонгох, алхамчилсан горим; хэрэглэгчийн гарын авлага |
 | B221940034 | Д.Оюунжаргал | `TraceRecorder`, `TraceNode`, `DataGenerator` — модны thread-safe бүртгэл, өгөгдөл үүсгэх; `README.md` |
+| B231930001 | Г.Гантогтох | GitHub repo / tag / release удирдлага, GitHub гарын авлага, постын хавсралт бэлтгэх |
 | B241940014 | Г.Мягмарсүрэн | `tests/TestSuite` — 58 тест, `examples/`, хүчингүй оролтын боловсруулалт; operational гарын авлага |
-| B242270084 | Э.Бүрэнбаяр | `Bench.java` — threshold / урсгал / хэв маягийн хэмжилт, `docs/bench.txt`, дүгнэлт; постын хавсралт бэлтгэх |
+| B242270084 | Э.Бүрэнбаяр | `Bench.java` — threshold / урсгал / хэв маягийн хэмжилт, `docs/bench.txt`, дүгнэлт; демо видео |
 
 Гишүүн бүрийн хувь нэмэр `git shortlog -sn` командаар харагдана.
 
