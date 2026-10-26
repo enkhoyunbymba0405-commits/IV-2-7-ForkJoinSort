@@ -247,7 +247,7 @@ java -Xss16m -cp out forkjoinsort.Main --headless -n 1000
 \subsection{Үндсэн тестийн өгөгдөл}
 \begin{center}
 \small
-\begin{tabular}{lL{6.2cm}L{5.0cm}}
+\begin{tabular}{lL{5.3cm}L{4.3cm}}
 \toprule
 Файл & Агуулга & Хүлээгдэх үр дүн \\
 \midrule
