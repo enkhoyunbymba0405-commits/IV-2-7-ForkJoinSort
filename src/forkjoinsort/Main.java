@@ -39,6 +39,26 @@ public class Main {
             System.out.println(MainWindow.summary(r));
             return;
         }
+        if (has(args, "--frames")) {
+            String dir = val(args, "--frames", "frames");
+            int w = Integer.parseInt(val(args, "-w", "1280"));
+            int h = Integer.parseInt(val(args, "-H", "720"));
+            RunResult r = SortRunner.run(cfg);
+            java.io.File d = new java.io.File(dir);
+            if (!d.exists() && !d.mkdirs())
+                throw new java.io.IOException("Хавтас үүсгэж чадсангүй: " + dir);
+            forkjoinsort.ui.TreePanel tp = new forkjoinsort.ui.TreePanel();
+            tp.setNodes(r.nodes);
+            int total = tp.totalSteps();
+            for (int k = 0; k <= total; k++) {
+                tp.setVisibleCount(k);
+                javax.imageio.ImageIO.write(tp.toImage(w, h), "png",
+                        new java.io.File(d, String.format("f%05d.png", k)));
+            }
+            System.out.println("Кадр хадгалагдлаа: " + (total + 1) + " ширхэг -> " + dir);
+            System.out.println(MainWindow.summary(r));
+            return;
+        }
         RunResult r = SortRunner.run(cfg);
         System.out.println(MainWindow.summary(r));
         if (!r.correct) System.exit(2);
@@ -92,6 +112,7 @@ public class Main {
           "  --headless            дэлгэцгүй ажиллуулж тоон үр дүн хэвлэнэ",
           "  --bench               threshold ба хурдасгалтын хүснэгт (CSV)",
           "  --render <file.png>   рекурсийн модыг зураг болгож хадгална",
+          "  --frames <хавтас>     модны өсөлтийг алхам тутмын кадр болгож хадгална",
           "",
           "  -n <тоо>     массивын хэмжээ (өгөгдмөл 1000)",
           "  -t <тоо>     threshold (өгөгдмөл 100)",
