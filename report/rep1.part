@@ -4,36 +4,42 @@
 \begin{document}
 \begin{titlepage}
 \centering
-\vspace*{2cm}
-{\large F.CSM302 --- Үйлдлийн систем\par}
-\vspace{1.2cm}
-{\Huge\bfseries\color{accent} Бие даалт 1\par}
-\vspace{0.6cm}
-{\Large Судалгаа, хэрэгжилт, туршилтын тайлан\par}
+{\large\bfseries ШИНЖЛЭХ УХААН ТЕХНОЛОГИЙН ИХ СУРГУУЛЬ\par}
+\vspace{0.25cm}
+{\large\bfseries МЭДЭЭЛЭЛ, ХОЛБООНЫ ТЕХНОЛОГИЙН СУРГУУЛЬ\par}
+
+\vspace{1.4cm}
+\includegraphics[width=3.3cm]{../docs/images/shutis_logo.png}
+
+\vspace{1.8cm}
+{\Huge\bfseries БИЕ ДААЛТ 1\par}
+\vspace{0.25cm}
+{\Huge\bfseries ТАЙЛАН\par}
+
 \vspace{1.0cm}
-{\LARGE\bfseries Fork-Join Sorting Application\par}
-\vspace{0.3cm}
-{\large Сурах бичгийн Бүлэг 4 --- Programming Project 3\par}
-{\large UI дүрслэл: \textbf{Recursion tree}\par}
-\vspace{1.2cm}
-{\Large Хуваарилалтын код: \textbf{IV-2-7}\par}
+{\large\bfseries Үйлдлийн систем /F.CSM302/\par}
+
 \vfill
-{\large\bfseries Багийн гишүүд\par}
-\vspace{0.3cm}
-\begin{tabular}{ll}
-\toprule
-Оюутны код & Нэр \\
-\midrule
-B200910032 & Д.Дагиймаа \\
-B221940034 & Д.Оюунжаргал \\
-B241940014 & Г.Мягмарсүрэн \\
-B241940127 & О.Энх \\
-B242270084 & Э.Бүрэнбаяр \\
-\bottomrule
+
+\begin{flushleft}
+\setlength{\tabcolsep}{0pt}
+\begin{tabular}{@{}p{4.3cm}@{}p{10.0cm}@{}}
+\textbf{Сэдэв:} &
+``Fork-Join Sorting Application. Programming Project 3 (4-р бүлэг),
+Recursion tree'' \\[0.85cm]
+\textbf{Хуваарилалтын код:} & IV-2-7 \\[0.75cm]
+\textbf{Хичээл заасан багш:} & Г.Ганбат /F.CS10/ \\[0.45cm]
+\textbf{Гүйцэтгэсэн баг:} &
+О.Энх /B241940127/ \\
+ & Д.Дагиймаа /B200910032/ \\
+ & Д.Оюунжаргал /B221940034/ \\
+ & Г.Мягмарсүрэн /B241940014/ \\
+ & Э.Бүрэнбаяр /B242270084/ \\[0.45cm]
+\textbf{Огноо:} & 2026 оны 10 дугаар сарын 26 \\
 \end{tabular}
-\vfill
-{\large 2026 оны 10-р сар}
-\vspace{1.5cm}
+\end{flushleft}
+
+\vspace{1.2cm}
 \end{titlepage}
 
 \tableofcontents
