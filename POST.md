@@ -105,12 +105,11 @@
 
 | # | Оюутны код | Нэр | Хариуцсан ажил | Гаргах баримт |
 |---|---|---|---|---|
-| 1 | B241940127 | **О.Энх** (ахлагч) | Fork/Join цөм: `MergesortAction`, `QuicksortAction`, `SequentialSort`, `SortRunner`. Нэгтгэл, тайлан, постыг тавих | `src/forkjoinsort/*.java`, `IV-2-7_BD1_Report.pdf` |
-| 2 | B200910032 | Д.Дагиймаа | Интерфейс: `ui/TreePanel` (рекурсийн мод зурах, DFS байрлуулалт, урсгалаар өнгөлөх), `ui/MainWindow` (удирдлага, статистик) | `src/forkjoinsort/ui/*`, `docs/images/*.png` |
-| 3 | B221940034 | Д.Оюунжаргал | Модны бүртгэл: `TraceRecorder` (thread-safe), `TraceNode`, `DataGenerator` (5 хэв маягийн өгөгдөл, текст оролт задлах) | `TraceRecorder.java`, `TraceNode.java`, `DataGenerator.java` |
-| 4 | B241940014 | Г.Мягмарсүрэн | Тест: `tests/TestSuite` (58 шалгалт), `examples/` оролтын файлууд, хүчингүй оролтын боловсруулалт, `test.sh`/`test.bat` | `tests/TestSuite.java`, `examples/` |
-| 5 | B242270084 | Э.Бүрэнбаяр | Хэмжилт: `Bench.java` (threshold / урсгал / хэв маяг), үр дүнг цуглуулж дүгнэлт бичих | `Bench.java`, `docs/bench.txt`, тайлангийн 5-р бүлэг |
-| 6 | B231930001 | *(нэр тодруулах)* | Баримт бичиг: `README.md`, хэрэглэгчийн ба operational гарын авлага, GitHub repo/tag/release, постын хавсралт бэлтгэх | `README.md`, `IV-2-7_User_Manual.pdf`, `IV-2-7_Operational_Manual.pdf` |
+| 1 | B241940127 | **О.Энх** (ахлагч) | Fork/Join цөм: `MergesortAction`, `QuicksortAction`, `SequentialSort`, `SortRunner`. Нэгтгэл, тайлан. **GitHub repo / tag / release** удирдах, постыг тавих | `src/forkjoinsort/*.java`, `IV-2-7_BD1_Report.pdf`, репозитори |
+| 2 | B200910032 | Д.Дагиймаа | Интерфейс: `ui/TreePanel` (рекурсийн мод зурах, DFS байрлуулалт, урсгалаар өнгөлөх), `ui/MainWindow` (удирдлага, статистик). **Хэрэглэгчийн гарын авлага** бичих | `src/forkjoinsort/ui/*`, `docs/images/*.png`, `IV-2-7_User_Manual.pdf` |
+| 3 | B221940034 | Д.Оюунжаргал | Модны бүртгэл: `TraceRecorder` (thread-safe), `TraceNode`, `DataGenerator` (5 хэв маягийн өгөгдөл, текст оролт задлах). **`README.md`** бичих | `TraceRecorder.java`, `TraceNode.java`, `DataGenerator.java`, `README.md` |
+| 4 | B241940014 | Г.Мягмарсүрэн | Тест: `tests/TestSuite` (58 шалгалт), `examples/` оролтын файлууд, хүчингүй оролтын боловсруулалт, `test.sh`/`test.bat`. **Operational гарын авлага** бичих | `tests/TestSuite.java`, `examples/`, `IV-2-7_Operational_Manual.pdf` |
+| 5 | B242270084 | Э.Бүрэнбаяр | Хэмжилт: `Bench.java` (threshold / урсгал / хэв маяг), үр дүнг цуглуулж дүгнэлт бичих. **Постын хавсралт** (PDF, zip) бэлтгэх | `Bench.java`, `docs/bench.txt`, тайлангийн 5-р бүлэг |
 
 ## Шүүмжлэх ажил (10 дахь долоо хоног, IV-2-10 — The Sleeping Teaching Assistant)
 
@@ -118,7 +117,7 @@
 |---|---|
 | Код татаж, компайл хийж, ажиллуулж шалгах | Г.Мягмарсүрэн, Э.Бүрэнбаяр |
 | Алгоритм / синхрончлолын зөв эсэхийг шалгах | О.Энх, Д.Оюунжаргал |
-| Интерфейс, баримт бичгийн шалгалт | Д.Дагиймаа, B231930001 |
+| Интерфейс, баримт бичгийн шалгалт | Д.Дагиймаа |
 | Шүүмжийн PDF-ийг нэгтгэж тавих | О.Энх |
 
 Загвар: `IV-2-7_Review_IV-2-10_template.pdf` (7 хуудас, бөглөх хүснэгттэй).
@@ -138,4 +137,4 @@ git commit -m "<файл>: тайлбар коммент нэмэв"
 git push
 ```
 
-Шалгах: `git shortlog -sn` → 6 нэр гарч ирэх ёстой.
+Шалгах: `git shortlog -sn` → **5 нэр** гарч ирэх ёстой.

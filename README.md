@@ -151,12 +151,11 @@ $ ./test.sh
 
 | Оюутны код | Нэр | Хариуцсан ажил |
 |---|---|---|
-| B241940127 | О.Энх | **Багийн ахлагч.** Fork/Join цөм — `MergesortAction`, `QuicksortAction`, `SequentialSort`, `SortRunner`; нэгтгэл, тайлан |
-| B200910032 | Д.Дагиймаа | UI — `ui/TreePanel` рекурсийн модны зураглал, зангилаа сонгох, алхамчилсан горим |
-| B221940034 | Д.Оюунжаргал | `TraceRecorder`, `TraceNode`, `DataGenerator` — модны thread-safe бүртгэл, өгөгдөл үүсгэх |
-| B241940014 | Г.Мягмарсүрэн | `tests/TestSuite` — 58 тест, `examples/`, хүчингүй оролтын боловсруулалт |
-| B242270084 | Э.Бүрэнбаяр | `Bench.java` — threshold / урсгал / хэв маягийн хэмжилт, `docs/bench.txt`, дүгнэлт |
-| B231930001 | *(нэр тодруулах)* | Баримт бичиг — `README.md`, хэрэглэгчийн ба operational гарын авлага, repo / tag / release удирдлага |
+| B241940127 | О.Энх | **Багийн ахлагч.** Fork/Join цөм — `MergesortAction`, `QuicksortAction`, `SequentialSort`, `SortRunner`; нэгтгэл, тайлан, GitHub repo / tag / release |
+| B200910032 | Д.Дагиймаа | UI — `ui/TreePanel` рекурсийн модны зураглал, зангилаа сонгох, алхамчилсан горим; хэрэглэгчийн гарын авлага |
+| B221940034 | Д.Оюунжаргал | `TraceRecorder`, `TraceNode`, `DataGenerator` — модны thread-safe бүртгэл, өгөгдөл үүсгэх; `README.md` |
+| B241940014 | Г.Мягмарсүрэн | `tests/TestSuite` — 58 тест, `examples/`, хүчингүй оролтын боловсруулалт; operational гарын авлага |
+| B242270084 | Э.Бүрэнбаяр | `Bench.java` — threshold / урсгал / хэв маягийн хэмжилт, `docs/bench.txt`, дүгнэлт; постын хавсралт бэлтгэх |
 
 Гишүүн бүрийн хувь нэмэр `git shortlog -sn` командаар харагдана.
 

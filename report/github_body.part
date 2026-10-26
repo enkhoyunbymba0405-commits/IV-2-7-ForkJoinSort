@@ -182,12 +182,11 @@ git log --stat v1.0         # хувилбарт орсон өөрчлөлтүү
 \toprule
 Оюутны код & Нэр & Хариуцсан ажил \\
 \midrule
-B200910032 & Д.Дагиймаа & UI: \texttt{TreePanel} --- рекурсийн модны зураглал, зангилаа сонгох, алхамчилсан горим \\
-B221940034 & Д.Оюунжаргал & \texttt{TraceRecorder}, \texttt{TraceNode}, \texttt{DataGenerator} --- модны thread-safe бүртгэл, өгөгдөл үүсгэх \\
-B231930001 & (нэр тодруулах) & Баримт бичиг: \texttt{README.md}, хэрэглэгчийн ба operational гарын авлага, repo/tag/release удирдлага \\
-B241940014 & Г.Мягмарсүрэн & \texttt{TestSuite} --- 58 тест, \texttt{examples/}, хүчингүй оролтын боловсруулалт \\
-B241940127 & О.Энх & Багийн ахлагч. Fork/Join цөм: \texttt{MergesortAction}, \texttt{QuicksortAction}, \texttt{SequentialSort}, \texttt{SortRunner}; нэгтгэл, тайлан \\
-B242270084 & Э.Бүрэнбаяр & \texttt{Bench.java} --- threshold / урсгал / хэв маягийн хэмжилт, \texttt{bench.txt}, үр дүнгийн дүгнэлт \\
+B200910032 & Д.Дагиймаа & UI: \texttt{TreePanel} --- рекурсийн модны зураглал, зангилаа сонгох, алхамчилсан горим; \textbf{хэрэглэгчийн гарын авлага} \\
+B221940034 & Д.Оюунжаргал & \texttt{TraceRecorder}, \texttt{TraceNode}, \texttt{DataGenerator} --- модны thread-safe бүртгэл, өгөгдөл үүсгэх; \textbf{README.md} \\
+B241940014 & Г.Мягмарсүрэн & \texttt{TestSuite} --- 58 тест, \texttt{examples/}, хүчингүй оролтын боловсруулалт; \textbf{operational гарын авлага} \\
+B241940127 & О.Энх & Багийн ахлагч. Fork/Join цөм: \texttt{MergesortAction}, \texttt{QuicksortAction}, \texttt{SequentialSort}, \texttt{SortRunner}; нэгтгэл, тайлан, \textbf{GitHub repo / tag / release} \\
+B242270084 & Э.Бүрэнбаяр & \texttt{Bench.java} --- threshold / урсгал / хэв маягийн хэмжилт, \texttt{bench.txt}, үр дүнгийн дүгнэлт; \textbf{постын хавсралт} \\
 \bottomrule
 \end{tabular}
 \end{center}
