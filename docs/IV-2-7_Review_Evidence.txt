@@ -1,0 +1,88 @@
+IV-2-7 -> IV-2-10 ШҮҮМЖИЙН НОТОЛГООНЫ ЛОГ
+=========================================
+Репозитори : https://github.com/mendamgalan/IV-2-10-sleeping-ta
+Commit     : ec353b0 (main), tag байхгүй
+Огноо      : 2026-10-26
+Орчин      : Ubuntu 24.04.5 LTS, x86_64, gcc 13.3.0, Python 3.13.16, 2 цөм
+
+1) BUILD — анхааруулгагүй
+------------------------------------------
+$ make -C sleeping-ta
+gcc -std=c11 -O2 -Wall -Wextra -Wpedantic -Werror -pthread -fPIC -shared src/engine.c -o libta.so
+(гаралт хоосон = нэг ч анхааруулга байхгүй)
+
+2) TEST — UI тестийн модуль ачаалагдсангүй
+------------------------------------------
+$ make -C sleeping-ta test
+./build/resource_failure                       -> амжилттай (3 fault-injection нөхцөл)
+python3 -m unittest discover -s tests -v
+  ... 14 тест бүгд ok ...
+  test_ui (unittest.loader._FailedTest.test_ui) ... ERROR
+  ImportError: Failed to import test module: test_ui
+    File "tests/test_ui.py", line 3, in <module>
+      import tkinter as tk
+  ModuleNotFoundError: No module named 'tkinter'
+Ran 15 tests in 3.628s
+FAILED (errors=1)
+make: *** [Makefile:19: test] Error 2
+
+   -> README-д "Дэлгэцгүй үед UI-ийн 4 тест SKIP болно" гэсэн. Дэлгэцгүй
+      үед SKIP ажилладаг (багийн өөрсдийн test-results-review.txt нотолно),
+      гэхдээ python3-tk СУУГААГҮЙ үед SKIP биш ERROR болж байна.
+
+3) БИЕ ДААСАН ТУРШИЛТ (өөрсдийн ctypes хөтлөгчөөр libta.so дээр)
+------------------------------------------
+A дээд ачаалал (40 оюутан, 20 сандал, 300 tick):
+   arrivals=3813 rejected=3593 completed=199 queue=20
+   snapshot JSON урт = 1340 байт (буферийн хязгаар 8192) -> халиагүй
+B давтагдах чанар (ижил seed 2 удаа):
+   snapshots_equal=True  journals_equal=True   -> байт байтаараа ижил
+C seed мэдрэг чанар (seed 123 vs 124): differs=True
+D сандал=0 (5 оюутан, 200 tick): rejected=228 completed=40 queue=0
+E инвариант (20 оюутан, 5 сандал, 500 tick, 7671 үйл явдал):
+   "waiting <= chairs" зөрчил = 0
+F хүчингүй оролт (6 тохиолдол):
+   (0,3,...) -> -1 ;  (41,3,...) -> -1 ;  (5,21,...) -> -1
+   (5,3,amin=0) -> -1 ; (5,3,amin>amax) -> -1 ; (hmin>hmax) -> -1
+   -> 6/6 татгалзсан
+
+4) THREADSANITIZER — race илрээгүй
+------------------------------------------
+$ gcc -g -O1 -fsanitize=thread -pthread -o drv driver.c src/engine.c
+$ ./drv
+driver done
+(3 ажиллуулалт x 200 tick, зэрэгцээ sim_snapshot()/sim_recent_events() дуудлагатай;
+ TSan-ы ямар ч мэдээлэл гараагүй = data race алга)
+
+5) ADDRESSSANITIZER + UBSAN — алдаагүй
+------------------------------------------
+$ gcc -g -O1 -fsanitize=address,undefined -pthread -o drv_asan driver.c src/engine.c
+$ ./drv_asan
+driver done            (exit 0, ямар ч тайлан гараагүй)
+
+6) VALGRIND — санах ойн алдагдал байхгүй
+------------------------------------------
+$ valgrind --leak-check=full --error-exitcode=9 --quiet ./drv_plain
+driver done            (exit 0, ямар ч алдаа/алдагдлын мэдээлэл гараагүй)
+
+7) GIT ТҮҮХ
+------------------------------------------
+$ git shortlog -sn --all
+    12  B242270008
+     4  Mend-Amgalan
+     2  Orgilsakhan
+     1  manlaibaatarmaggir
+$ git tag
+(хоосон)
+
+8) КОДЫН ШАЛГАЛТААР ИЛЭРСЭН ДАЛД ЭРСДЭЛ
+------------------------------------------
+engine.c:322-363  sim_recent_events() / sim_events() нь mu-г барилгүй
+                  хуваалцсан төлөвийг уншина. Одоогийн дуудагчийн сахилгаар
+                  аюулгүй (TSan баталсан), гэхдээ кодод баталгаа байхгүй.
+engine.c:300-316  sim_snapshot() дотор snprintf-ийн буцах утгыг шалгалгүй
+                  хуримтлуулж байна. Одоогийн хязгаараар хүрэхгүй
+                  (хамгийн их 1340 / 8192), MAX_STUDENTS нэмэгдвэл аюултай.
+engine.c:164-186  Хаалтын дараалал: оюутан `started`-ыг хүлээж байх агшинд
+                  stopping тавигдвал join гацах онолын боломж. Одоогийн
+                  хяналтын урсгалаар үүсэхгүй; давтаж чадсангүй.

@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="mn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IV-2-7 Fork-Join Sorting</title>
+<style>
+  :root{
+    --navy:#1a2350; --navy2:#2b3a7a; --ink:#1d2129; --muted:#5a6070;
+    --line:#dfe3ea; --bg:#f4f6f9; --card:#ffffff;
+    --blue:#4878a8; --blue-l:#c3d5e6; --orange:#e67e22; --orange-l:#fbd9b4;
+    --green:#1e8449; --red:#c0392b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font:14px/1.45 "Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+       color:var(--ink);background:var(--bg)}
+  header{background:var(--navy);color:#fff;padding:12px 18px}
+  header h1{margin:0;font-size:17px;letter-spacing:.2px}
+  header .sub{font-size:12px;opacity:.78;margin-top:3px}
+  .wrap{max-width:1500px;margin:0 auto;padding:14px 16px 40px}
+  .bar{background:var(--card);border:1px solid var(--line);border-radius:8px;
+       padding:12px 14px;display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end}
+  .f{display:flex;flex-direction:column;gap:4px}
+  .f label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+  input,select{border:1px solid var(--line);border-radius:5px;padding:6px 8px;font:inherit;background:#fff}
+  input[type=number]{width:86px}
+  input#custom{width:260px}
+  button{border:0;border-radius:5px;padding:8px 14px;font:inherit;font-weight:600;cursor:pointer}
+  .primary{background:var(--navy);color:#fff}
+  .ghost{background:#eceff4;color:var(--ink)}
+  button:disabled{opacity:.45;cursor:default}
+  .cols{display:grid;grid-template-columns:1fr 330px;gap:14px;margin-top:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:8px}
+  .card h2{margin:0;font-size:12px;letter-spacing:.5px;text-transform:uppercase;
+           color:var(--muted);padding:10px 14px;border-bottom:1px solid var(--line)}
+  .pad{padding:12px 14px}
+  #treebox{overflow:auto;height:530px;background:
+     repeating-linear-gradient(0deg,#fafbfd,#fafbfd 24px,#f3f5f9 24px,#f3f5f9 25px)}
+  svg{display:block}
+  .nd rect{stroke:#8d98ab;stroke-width:1;rx:5;ry:5;cursor:pointer}
+  .nd text{font-size:11px;fill:#1d2129;pointer-events:none}
+  .edge{stroke:#b9c0cc;stroke-width:1.3;fill:none}
+  .sel rect{stroke:var(--red);stroke-width:2.5}
+  table.kv{width:100%;border-collapse:collapse;font-size:13px}
+  table.kv td{padding:4px 0;border-bottom:1px solid #f0f2f6}
+  table.kv td:last-child{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+  .legend{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted);
+          padding:8px 14px;border-top:1px solid var(--line)}
+  .sw{display:inline-block;width:12px;height:12px;border-radius:3px;
+      border:1px solid #8d98ab;vertical-align:-2px;margin-right:4px}
+  .vals{font-family:ui-monospace,Consolas,monospace;font-size:12px;
+        background:#f6f7fa;border:1px solid var(--line);border-radius:5px;
+        padding:7px 9px;word-break:break-all;max-height:110px;overflow:auto}
+  .tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700}
+  .ok{background:#e4f3ea;color:var(--green)}
+  .bad{background:#fae5e3;color:var(--red)}
+  .note{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.5}
+  .step{display:flex;align-items:center;gap:10px;padding:10px 14px;border-top:1px solid var(--line)}
+  .step input[type=range]{flex:1}
+  footer{color:var(--muted);font-size:12px;margin-top:18px;line-height:1.6}
+  code{background:#eceff4;padding:1px 5px;border-radius:3px;font-size:12px}
+  @media(max-width:1000px){.cols{grid-template-columns:1fr}#treebox{height:420px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>IV-2-7 — Fork-Join Sorting Application · рекурсийн мод</h1>
+  <div class="sub">F.CSM302 Үйлдлийн систем · Бие даалт 1 · Бүлэг 4, Programming Project 3</div>
+</header>
+
+<div class="wrap">
+
+  <div class="bar">
+    <div class="f"><label>Алгоритм</label>
+      <select id="algo"><option value="merge">Mergesort</option><option value="quick">Quicksort</option></select></div>
+    <div class="f"><label>Элемент (n)</label><input type="number" id="n" value="400" min="0" max="20000"></div>
+    <div class="f"><label>Threshold</label><input type="number" id="t" value="25" min="1" max="5000"></div>
+    <div class="f"><label>Ажилчин</label><input type="number" id="p" value="2" min="1" max="8"></div>
+    <div class="f"><label>Seed</label><input type="number" id="seed" value="42" min="0"></div>
+    <div class="f"><label>Өгөгдөл</label>
+      <select id="pat">
+        <option>RANDOM</option><option>SORTED</option><option>REVERSED</option>
+        <option>FEW_UNIQUE</option><option>ALL_EQUAL</option></select></div>
+    <div class="f"><label>Өөрийн оролт</label><input id="custom" placeholder="7, 12, 19, 3, 18, 4, 2, 6, 15, 8"></div>
+    <button class="primary" id="run">Ажиллуулах</button>
+    <button class="ghost" id="book">Номын жишээ (Figure 4.27)</button>
+    <label style="display:flex;gap:6px;align-items:center;font-size:13px">
+      <input type="checkbox" id="stepmode"> Алхамчилсан горим</label>
+  </div>
+
+  <div class="cols">
+    <div class="card">
+      <h2>Рекурсийн мод</h2>
+      <div id="treebox"><svg id="svg" width="100" height="100"></svg></div>
+      <div class="step">
+        <span style="font-size:12px;color:var(--muted)">Алхам</span>
+        <input type="range" id="slider" min="0" max="0" value="0" disabled>
+        <span id="stepn" style="font-size:12px;font-variant-numeric:tabular-nums">0 / 0</span>
+      </div>
+      <div class="legend" id="legend"></div>
+    </div>
+
+    <div>
+      <div class="card">
+        <h2>Үр дүн</h2>
+        <div class="pad">
+          <table class="kv">
+            <tr><td>Зангилаа</td><td id="k-nodes">—</td></tr>
+            <tr><td>Навч</td><td id="k-leaf">—</td></tr>
+            <tr><td>Модны гүн</td><td id="k-depth">—</td></tr>
+            <tr><td>Харьцуулалт</td><td id="k-cmp">—</td></tr>
+            <tr><td>Зөв эсэх</td><td id="k-ok">—</td></tr>
+          </table>
+          <div class="note" id="perw"></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <h2>Сонгосон зангилаа</h2>
+        <div class="pad">
+          <div id="nodeinfo" style="font-size:13px;color:var(--muted)">
+            Мод дээрх зангилаа дээр дарна уу.</div>
+          <div id="nodevals" style="display:none">
+            <div style="font-size:11px;color:var(--muted);margin:8px 0 3px">ӨМНӨ</div>
+            <div class="vals" id="v-before"></div>
+            <div style="font-size:11px;color:var(--muted);margin:8px 0 3px">ДАРАА</div>
+            <div class="vals" id="v-after"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <strong>Энэ хуудас юу вэ.</strong> Энэ нь төслийн <em>хөтөч дээрх хувилбар</em> —
+    суулгах шаардлагагүйгээр алгоритмыг харуулах зорилготой.
+    <strong>Жинхэнэ параллель хэрэгжилт нь Java дээрх</strong>
+    <code>ForkJoinPool</code> + <code>RecursiveAction</code> код бөгөөд
+    репозиторийн <code>src/forkjoinsort/</code> дотор байна. JavaScript нь нэг
+    урсгалтай тул энд ажилчин урсгалуудын хуваарилалтыг
+    <em>загварчилсан</em>: <code>invokeAll(a, b)</code>-ийн дүрмээр баруун хүүг
+    одоогийн ажилчин өөрөө гүйцэтгэж, зүүн хүүг сул ажилчин байвал түүнд
+    шилжүүлдэг. Өнгө нь тухайн зангилааг аль ажилчин гүйцэтгэснийг заана.
+    Хурдны бодит хэмжилт, хурдасгалтын тоонуудыг Java хувилбараар
+    (<code>./run.sh --bench</code>) гаргасан.
+    <br><br>
+    Эх код, тайлан, гарын авлага:
+    <a href="https://github.com/enkhoyunbymba0405-commits/IV-2-7-ForkJoinSort">GitHub репозитори</a>
+  </footer>
+</div>
+
+<script>
+"use strict";
+
+/* ---------- Санамсаргүй тоо: давтагдахын тулд өөрийн генератор ---------- */
+function makeRng(seed){
+  let s = (seed >>> 0) || 1;
+  return function(){ s ^= s<<13; s>>>=0; s ^= s>>17; s ^= s<<5; s>>>=0; return s; };
+}
+
+/* ---------- Өгөгдөл үүсгэх (Java DataGenerator-тай ижил санаа) ---------- */
+function generate(n, pattern, seed){
+  const r = makeRng(seed), a = new Array(n);
+  for (let i=0;i<n;i++) a[i] = r() % 100000;
+  switch(pattern){
+    case "SORTED":     a.sort((x,y)=>x-y); break;
+    case "REVERSED":   a.sort((x,y)=>y-x); break;
+    case "FEW_UNIQUE": for(let i=0;i<n;i++) a[i] = a[i] % 8; break;
+    case "ALL_EQUAL":  a.fill(7); break;
+  }
+  return a;
+}
+
+/* ---------- Хэмжилт ---------- */
+let CMP = 0;
+const lt = (x,y) => { CMP++; return x < y; };
+const le = (x,y) => { CMP++; return x <= y; };
+
+/* ---------- Суурь алгоритмууд (SequentialSort-ын толь) ---------- */
+function insertionSort(a, lo, hi){
+  for (let i=lo+1;i<hi;i++){
+    const key=a[i]; let j=i-1;
+    while (j>=lo && lt(key,a[j])) { a[j+1]=a[j]; j--; }
+    a[j+1]=key;
+  }
+}
+function merge(a, tmp, lo, mid, hi){
+  if (le(a[mid-1], a[mid])) return;
+  for (let i=lo;i<hi;i++) tmp[i]=a[i];
+  let i=lo, j=mid, k=lo;
+  while (i<mid && j<hi) a[k++] = le(tmp[i],tmp[j]) ? tmp[i++] : tmp[j++];
+  while (i<mid) a[k++]=tmp[i++];
+  while (j<hi)  a[k++]=tmp[j++];
+}
+/* pivot байрлалыг (lo, hi)-ээс гаргасан хэшээр сонгоно — өгөгдлөөс хамаарахгүй */
+function pick(lo, hi, k){
+  let h = (lo*2654435761 ^ hi*2246822519 ^ k*3266489917) >>> 0;
+  h = (h ^ (h>>>15)) >>> 0;
+  h = (h * 2246822519) >>> 0;
+  h = (h ^ (h>>>13)) >>> 0;      /* >>> 0 ЗААВАЛ — ^ нь тэмдэгтэй int32 буцаадаг */
+  return lo + (h % (hi-lo));
+}
+function medianOfThree(a, lo, hi){
+  const span = hi-lo;
+  if (span < 8) return a[lo + (span>>1)];
+  const x=a[pick(lo,hi,1)], y=a[pick(lo,hi,2)], z=a[pick(lo,hi,3)];
+  if (le(x,y)) { if (le(y,z)) return y; return le(x,z)? z : x; }
+  else         { if (le(x,z)) return x; return le(y,z)? z : y; }
+}
+/* Dijkstra-гийн гурван талт хуваалт */
+function partition3(a, lo, hi){
+  const pivot = medianOfThree(a, lo, hi);
+  let lt_=lo, i=lo, gt=hi-1;
+  while (i<=gt){
+    CMP++;
+    if (a[i] < pivot){ const t=a[lt_]; a[lt_]=a[i]; a[i]=t; lt_++; i++; }
+    else if (a[i] > pivot){ const t=a[i]; a[i]=a[gt]; a[gt]=t; gt--; }
+    else i++;
+  }
+  return [lt_, gt];
+}
+
+/* Давталттай гурван талт quicksort — гүн хэт гүнзгийрэхэд энэ рүү шилжинэ
+   (Java дахь SequentialSort.quicksort3-ийн толь, стек хамгаалалт) */
+function quicksort3(a, lo, hi, t){
+  while (hi - lo > Math.max(1, t)){
+    const r = partition3(a, lo, hi);
+    const leftSize = r[0]-lo, rightSize = hi-(r[1]+1);
+    if (leftSize < rightSize){ quicksort3(a, lo, r[0], t); lo = r[1]+1; }
+    else { quicksort3(a, r[1]+1, hi, t); hi = r[0]; }
+  }
+  insertionSort(a, lo, hi);
+}
+
+/* ---------- Мод + ажилчин хуваарилалтын загварчлал ---------- */
+const MAX_DEPTH = 48;
+let NODES, FREE, NWORK, THRESH, ARR, TMP;
+
+function openNode(parent, lo, hi, depth, worker){
+  const nd = { id: NODES.length, parent, lo, hi, depth, worker,
+               leaf:false, before: ARR.slice(lo,hi), after:null };
+  NODES.push(nd);
+  return nd;
+}
+/* invokeAll(a,b): баруун хүүг ОДООГИЙН ажилчин, зүүнийг сул ажилчин авна */
+function forkWorker(cur){
+  if (FREE < NWORK) return FREE++;
+  return cur;
+}
+
+function mergeAction(lo, hi, depth, parent, worker){
+  const nd = openNode(parent, lo, hi, depth, worker);
+  if (hi - lo <= THRESH){
+    insertionSort(ARR, lo, hi);
+    nd.leaf = true; nd.after = ARR.slice(lo,hi); return;
+  }
+  const mid = lo + ((hi-lo)>>1);
+  const lw = forkWorker(worker);
+  mergeAction(lo,  mid, depth+1, nd.id, lw);
+  mergeAction(mid, hi,  depth+1, nd.id, worker);
+  merge(ARR, TMP, lo, mid, hi);
+  nd.after = ARR.slice(lo,hi);
+}
+
+function quickAction(lo, hi, depth, parent, worker){
+  const nd = openNode(parent, lo, hi, depth, worker);
+  if (hi - lo <= THRESH){
+    insertionSort(ARR, lo, hi);
+    nd.leaf = true; nd.after = ARR.slice(lo,hi); return;
+  }
+  if (depth >= MAX_DEPTH){                    /* стек хамгаалалт */
+    quicksort3(ARR, lo, hi, THRESH);
+    nd.leaf = true; nd.after = ARR.slice(lo,hi); return;
+  }
+  const r = partition3(ARR, lo, hi);
+  const ll=lo, lr=r[0], rl=r[1]+1, rr=hi;
+  const hasL = lr-ll>0, hasR = rr-rl>0;
+  if (hasL && hasR){
+    const lw = forkWorker(worker);
+    quickAction(ll, lr, depth+1, nd.id, lw);
+    quickAction(rl, rr, depth+1, nd.id, worker);
+  } else if (hasL) quickAction(ll, lr, depth+1, nd.id, worker);
+  else if (hasR)   quickAction(rl, rr, depth+1, nd.id, worker);
+  nd.after = ARR.slice(lo,hi);
+}
+
+/* ---------- Зураглал ---------- */
+const PAL = [
+  ["#c3d5e6","#4878a8"], ["#fbd9b4","#e67e22"], ["#cfe6cf","#2e8b57"],
+  ["#e3d4ec","#7d5ba6"], ["#f7d6dd","#c0392b"], ["#d7e8ea","#2a7f8f"],
+  ["#eae3cd","#9a7b31"], ["#dcdfe6","#5a6070"]
+];
+const NW=92, NH=24, GAPX=14, GAPY=62;
+
+function layout(nodes){
+  if (!nodes.length) return {pos:[], kids:[]};
+  const kids = nodes.map(()=>[]);
+  nodes.forEach(n=>{ if(n.parent>=0) kids[n.parent].push(n.id); });
+  let cursor = 0;
+  const pos = nodes.map(()=>({x:0,y:0}));
+  (function place(id){
+    const ch = kids[id];
+    if (!ch.length){ pos[id].x = cursor; cursor += NW+GAPX; }
+    else { ch.forEach(place); pos[id].x = (pos[ch[0]].x + pos[ch[ch.length-1]].x)/2; }
+    pos[id].y = nodes[id].depth * GAPY;
+  })(0);
+  return {pos, kids};
+}
+
+let LAST=null, SEL=-1;
+
+function draw(visible){
+  const svg = document.getElementById('svg');
+  if (!LAST || !LAST.nodes.length){ svg.setAttribute('width',10); svg.setAttribute('height',10); svg.innerHTML=''; return; }
+  const {nodes, pos, kids} = LAST;
+  const show = visible === undefined ? nodes.length : visible;
+  let maxX=0, maxY=0;
+  for (let i=0;i<show;i++){ maxX=Math.max(maxX,pos[i].x); maxY=Math.max(maxY,pos[i].y); }
+  const W = maxX+NW+40, H = maxY+NH+40;
+  let s = '';
+  for (let i=0;i<show;i++){
+    const n=nodes[i];
+    if (n.parent>=0 && n.parent<show){
+      const a=pos[n.parent], b=pos[i];
+      s += `<path class="edge" d="M${a.x+NW/2} ${a.y+NH} L${b.x+NW/2} ${b.y}"/>`;
+    }
+  }
+  for (let i=0;i<show;i++){
+    const n=nodes[i], p=pos[i], c=PAL[n.worker % PAL.length];
+    const fill = n.leaf ? c[1] : c[0];
+    const col  = n.leaf ? '#fff' : '#1d2129';
+    s += `<g class="nd${i===SEL?' sel':''}" data-id="${i}">
+      <rect x="${p.x}" y="${p.y}" width="${NW}" height="${NH}" fill="${fill}"/>
+      <text x="${p.x+NW/2}" y="${p.y+16}" text-anchor="middle" fill="${col}">[${n.lo},${n.hi}) ${n.hi-n.lo}</text>
+    </g>`;
+  }
+  svg.setAttribute('width', W); svg.setAttribute('height', H);
+  svg.innerHTML = s;
+  svg.querySelectorAll('.nd').forEach(g=>{
+    g.addEventListener('click', ()=> selectNode(+g.dataset.id));
+  });
+}
+
+function selectNode(id){
+  SEL = id; draw(+document.getElementById('slider').value || undefined);
+  const n = LAST.nodes[id];
+  document.getElementById('nodeinfo').innerHTML =
+    `Муж <b>[${n.lo}, ${n.hi})</b> · хэмжээ <b>${n.hi-n.lo}</b> · гүн <b>${n.depth}</b> ·
+     ажилчин <b>W${n.worker}</b> · ${n.leaf?'<b>навч</b> (insertion sort)':'салаа'}`;
+  document.getElementById('nodevals').style.display='block';
+  const fmt = v => v.length>120 ? v.slice(0,120).join(', ')+' …' : v.join(', ');
+  document.getElementById('v-before').textContent = fmt(n.before);
+  document.getElementById('v-after').textContent  = n.after ? fmt(n.after) : '—';
+}
+
+/* ---------- Ажиллуулах ---------- */
+function run(){
+  const algo = document.getElementById('algo').value;
+  const t    = Math.max(1, +document.getElementById('t').value||1);
+  const p    = Math.min(8, Math.max(1, +document.getElementById('p').value||1));
+  const seed = +document.getElementById('seed').value||0;
+  const pat  = document.getElementById('pat').value;
+  const raw  = document.getElementById('custom').value.trim();
+
+  let data;
+  if (raw){
+    data = raw.split(/[\s,;]+/).filter(Boolean).map(Number);
+    if (data.some(isNaN)){ alert('Оролт зөвхөн тоо байх ёстой. Жишээ: 7, 12, 19, 3'); return; }
+    document.getElementById('n').value = data.length;
+  } else {
+    data = generate(Math.max(0,+document.getElementById('n').value||0), pat, seed);
+  }
+
+  ARR = data.slice(); TMP = new Array(ARR.length);
+  NODES = []; FREE = 1; NWORK = p; THRESH = t; CMP = 0;
+  const expect = data.slice().sort((x,y)=>x-y);
+
+  const t0 = performance.now();
+  if (ARR.length > 1) (algo==='merge' ? mergeAction : quickAction)(0, ARR.length, 0, -1, 0);
+  const ms = performance.now() - t0;
+
+  const ok = ARR.length===expect.length && ARR.every((v,i)=>v===expect[i]);
+  const leaves = NODES.filter(n=>n.leaf).length;
+  const depth  = NODES.reduce((m,n)=>Math.max(m,n.depth),0);
+
+  const {pos,kids} = layout(NODES);
+  LAST = {nodes:NODES, pos, kids}; SEL=-1;
+
+  document.getElementById('k-nodes').textContent = NODES.length;
+  document.getElementById('k-leaf').textContent  = leaves;
+  document.getElementById('k-depth').textContent = depth;
+  document.getElementById('k-cmp').textContent   = CMP.toLocaleString('en-US');
+  document.getElementById('k-ok').innerHTML =
+    ok ? '<span class="tag ok">ЗӨВ</span>' : '<span class="tag bad">БУРУУ</span>';
+
+  const per = {};
+  NODES.forEach(n=>{ per[n.worker]=(per[n.worker]||0)+1; });
+  document.getElementById('perw').innerHTML =
+    '<b>Ажилчин тус бүрийн зангилаа:</b><br>' +
+    Object.keys(per).sort((a,b)=>a-b).map(w =>
+      `<span class="sw" style="background:${PAL[w%PAL.length][1]}"></span>W${w} — ${per[w]}`
+    ).join('<br>') + `<br><span style="color:#8d98ab">${ms.toFixed(1)} мс (хөтөч, нэг урсгал)</span>`;
+
+  document.getElementById('legend').innerHTML =
+    Object.keys(per).sort((a,b)=>a-b).map(w =>
+      `<span><span class="sw" style="background:${PAL[w%PAL.length][0]}"></span>W${w} салаа</span>
+       <span><span class="sw" style="background:${PAL[w%PAL.length][1]}"></span>W${w} навч</span>`
+    ).join('');
+
+  const sl = document.getElementById('slider');
+  const stepMode = document.getElementById('stepmode').checked;
+  sl.max = NODES.length; sl.disabled = !stepMode;
+  sl.value = stepMode ? 0 : NODES.length;
+  document.getElementById('stepn').textContent = sl.value + ' / ' + NODES.length;
+  document.getElementById('nodeinfo').textContent = 'Мод дээрх зангилаа дээр дарна уу.';
+  document.getElementById('nodevals').style.display='none';
+  draw(+sl.value);
+}
+
+document.getElementById('run').addEventListener('click', run);
+document.getElementById('book').addEventListener('click', ()=>{
+  document.getElementById('custom').value = '7, 12, 19, 3, 18, 4, 2, 6, 15, 8';
+  document.getElementById('t').value = 2;
+  document.getElementById('algo').value = 'merge';
+  run();
+});
+document.getElementById('slider').addEventListener('input', e=>{
+  document.getElementById('stepn').textContent = e.target.value + ' / ' + e.target.max;
+  draw(+e.target.value);
+});
+document.getElementById('stepmode').addEventListener('change', run);
+document.getElementById('custom').addEventListener('input', e=>{
+  document.getElementById('pat').disabled = !!e.target.value.trim();
+});
+
+run();
+</script>
+</body>
+</html>

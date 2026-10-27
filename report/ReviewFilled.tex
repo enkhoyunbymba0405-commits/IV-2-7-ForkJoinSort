@@ -1,0 +1,494 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\sloppy
+\setlength{\emergencystretch}{2em}
+\usepackage[margin=2.1cm]{geometry}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{array}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,fit,shapes.geometric}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\usepackage{caption}
+\captionsetup{font=small,labelfont=bf}
+% babel нь \begin{document}-д эдгээрийг дардаг тул AtBeginDocument ашиглана
+\AtBeginDocument{%
+  \renewcommand{\contentsname}{Гарчиг}%
+  \renewcommand{\tablename}{Хүснэгт}%
+  \renewcommand{\figurename}{Зураг}%
+  \renewcommand{\refname}{Ашигласан материал}%
+}
+
+\definecolor{codebg}{RGB}{246,247,249}
+\definecolor{accent}{RGB}{31,78,121}
+
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  backgroundcolor=\color{codebg},
+  frame=single, rulecolor=\color{gray!40},
+  keywordstyle=\color{accent}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  breaklines=true, columns=fullflexible, keepspaces=true,
+  extendedchars=true, inputencoding=utf8,
+  literate=
+    {А}{{\CYRA}}1
+    {Б}{{\CYRB}}1
+    {В}{{\CYRV}}1
+    {Г}{{\CYRG}}1
+    {Д}{{\CYRD}}1
+    {Е}{{\CYRE}}1
+    {Ё}{{\CYRYO}}1
+    {Ж}{{\CYRZH}}1
+    {З}{{\CYRZ}}1
+    {И}{{\CYRI}}1
+    {Й}{{\CYRISHRT}}1
+    {К}{{\CYRK}}1
+    {Л}{{\CYRL}}1
+    {М}{{\CYRM}}1
+    {Н}{{\CYRN}}1
+    {О}{{\CYRO}}1
+    {Ө}{{\CYROTLD}}1
+    {П}{{\CYRP}}1
+    {Р}{{\CYRR}}1
+    {С}{{\CYRS}}1
+    {Т}{{\CYRT}}1
+    {У}{{\CYRU}}1
+    {Ү}{{\CYRY}}1
+    {Ф}{{\CYRF}}1
+    {Х}{{\CYRH}}1
+    {Ц}{{\CYRC}}1
+    {Ч}{{\CYRCH}}1
+    {Ш}{{\CYRSH}}1
+    {Щ}{{\CYRSHCH}}1
+    {Ъ}{{\CYRHRDSN}}1
+    {Ы}{{\CYRERY}}1
+    {Ь}{{\CYRSFTSN}}1
+    {Э}{{\CYREREV}}1
+    {Ю}{{\CYRYU}}1
+    {Я}{{\CYRYA}}1
+    {а}{{\cyra}}1
+    {б}{{\cyrb}}1
+    {в}{{\cyrv}}1
+    {г}{{\cyrg}}1
+    {д}{{\cyrd}}1
+    {е}{{\cyre}}1
+    {ё}{{\cyryo}}1
+    {ж}{{\cyrzh}}1
+    {з}{{\cyrz}}1
+    {и}{{\cyri}}1
+    {й}{{\cyrishrt}}1
+    {к}{{\cyrk}}1
+    {л}{{\cyrl}}1
+    {м}{{\cyrm}}1
+    {н}{{\cyrn}}1
+    {о}{{\cyro}}1
+    {ө}{{\cyrotld}}1
+    {п}{{\cyrp}}1
+    {р}{{\cyrr}}1
+    {с}{{\cyrs}}1
+    {т}{{\cyrt}}1
+    {у}{{\cyru}}1
+    {ү}{{\cyry}}1
+    {ф}{{\cyrf}}1
+    {х}{{\cyrh}}1
+    {ц}{{\cyrc}}1
+    {ч}{{\cyrch}}1
+    {ш}{{\cyrsh}}1
+    {щ}{{\cyrshch}}1
+    {ъ}{{\cyrhrdsn}}1
+    {ы}{{\cyrery}}1
+    {ь}{{\cyrsftsn}}1
+    {э}{{\cyrerev}}1
+    {ю}{{\cyryu}}1
+    {я}{{\cyrya}}1,
+  xleftmargin=0.8em, framexleftmargin=0.8em,
+  language=Java, showstringspaces=false
+}
+\titleformat{\section}{\Large\bfseries\color{accent}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{0.6em}{}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\setlength{\headheight}{14pt}
+\setlength{\parskip}{3pt}
+\fancyhead[L]{\small IV-2-7 $\to$ IV-2-10}
+\fancyhead[R]{\small Review --- бөглөсөн}
+
+\begin{document}
+\begin{titlepage}
+\centering
+{\large\bfseries ШИНЖЛЭХ УХААН ТЕХНОЛОГИЙН ИХ СУРГУУЛЬ\par}
+\vspace{0.25cm}
+{\large\bfseries МЭДЭЭЛЭЛ, ХОЛБООНЫ ТЕХНОЛОГИЙН СУРГУУЛЬ\par}
+
+\vspace{1.4cm}
+\includegraphics[width=3.3cm]{../docs/images/shutis_logo.png}
+
+\vspace{1.8cm}
+{\Huge\bfseries БИЕ ДААЛТ 1\par}
+\vspace{0.25cm}
+{\Huge\bfseries ХАРИЛЦАН ШҮҮМЖ\par}
+
+\vspace{1.0cm}
+{\large\bfseries Үйлдлийн систем /F.CSM302/\par}
+
+\vfill
+
+\begin{flushleft}
+\setlength{\tabcolsep}{0pt}
+\begin{tabular}{@{}p{4.3cm}@{}p{10.0cm}@{}}
+\textbf{Сэдэв:} &
+``Fork-Join Sorting Application. Programming Project 3 (4-р бүлэг),
+Recursion tree'' \\[0.85cm]
+\textbf{Хуваарилалтын код:} & IV-2-7 \\[0.75cm]
+\textbf{Шүүмжилсэн баг:} & IV-2-10 --- The Sleeping Teaching Assistant \\[0.75cm]
+\textbf{Хичээл заасан багш:} & Г.Ганбат /F.CS10/ \\[0.45cm]
+\textbf{Гүйцэтгэсэн баг:} &
+О.Энх /B241940127/ \\
+ & Д.Дагиймаа /B200910032/ \\
+ & Д.Оюунжаргал /B221940034/ \\
+ & Г.Гантогтох /B231930001/ \\
+ & Г.Мягмарсүрэн /B241940014/ \\
+ & Э.Бүрэнбаяр /B242270084/ \\[0.45cm]
+\textbf{Огноо:} & 2026 оны 10 дугаар сарын 26 \\
+\end{tabular}
+\end{flushleft}
+
+\vspace{1.2cm}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+%============================================================
+\section{Ажлын ойлголт}
+
+\textbf{Бодлогын мөн чанар.} Sleeping Teaching Assistant нь сонгодог Sleeping
+Barber бодлогын хувилбар. Нэг туслах багш (TA) оффисдоо суудаг: оюутан
+байхгүй бол \emph{унтана}, оюутан ирэхэд \emph{сэрч} тусална. TA завгүй үед
+ирсэн оюутан коридорын хязгаарлагдмал тооны сандлын нэгэнд сууж хүлээнэ.
+Сандал бүгд дүүрэн бол оюутан буцаж явж, хэсэг хугацааны дараа дахин ирнэ.
+
+\textbf{Синхрончлолын асуудал.} Энэ бодлого нь зэрэгцээ ажиллагааны гурван
+сонгодог бэрхшээлийг нэг дор агуулдаг:
+
+\begin{enumerate}[nosep,leftmargin=*]
+\item \textbf{Алдагдсан сэрээлт (lost wakeup).} Оюутан ``TA унтаж байна уу?''
+гэж шалгаад, сэрээх хүртэлх зай завсарт TA өөр оюутныг авч эхэлж болно.
+Энэ бол сонгодог \emph{check-then-act} уралдаан.
+\item \textbf{Хуваалцсан дарааллын бүрэн бүтэн байдал.} Хүлээлгийн дараалал,
+сандлын тоолуурыг олон thread зэрэг өөрчилдөг тул критик муж шаардлагатай.
+\item \textbf{Хаалтын дараалал.} Загварыг зогсооход унтаж буй TA болон
+хүлээж буй оюутнуудыг бүгдийг сэрээж гаргахгүй бол \texttt{pthread\_join}
+мөнхөд гацна.
+\end{enumerate}
+
+\textbf{Багийн шийдэл.} Хөдөлгүүрийг \textbf{C / POSIX Pthreads} дээр бичиж,
+удирдах цонхыг Python Tkinter дээр хийсэн; хоёулаа \texttt{ctypes}-ээр
+холбогдоно. Оюутан бүр болон TA нь \emph{бодит OS thread}. Хуваалцсан бүх
+төлөвийг нэг \texttt{pthread\_mutex\_t mu} хамгаална. TA оюутангүй үед
+\texttt{work} нэртэй semaphore дээр \emph{бодитоор блоклогдож} унтдаг --- энэ
+нь ``унтах''-ыг давталтаар дуурайгаагүй гэдгийг харуулна. Нэмж
+\texttt{ta\_tick}, \texttt{ack}, \texttt{started} болон оюутан тус бүрийн
+\texttt{ticks[i]}, \texttt{done[i]} semaphore-уудаар нэг \emph{tick} доторх
+үйлдлүүдийг тодорхой дараалалд оруулсан. Иймээс ижил seed, ижил тохиргоо
+\textbf{байт байтаараа ижил} түүх өгдөг --- бид үүнийг тусад нь шалгасан
+(4.2, тест 2).
+
+%============================================================
+\section{Туршилтын орчин}
+
+\begin{center}
+\small
+\begin{tabular}{lL{9.5cm}}
+\toprule
+Үзүүлэлт & Утга \\
+\midrule
+OS & Ubuntu 24.04.5 LTS (Linux 6.18) \\
+Architecture & x86\_64 \\
+Compiler / runtime & gcc 13.3.0, Python 3.13.16, glibc 2.39 \\
+Хувилбар & commit \texttt{ec353b0} (\texttt{main}), tag байхгүй \\
+Dependency & зөвхөн стандарт libc + pthread; Python pip сан \textbf{шаардлагагүй} \\
+Цөмийн тоо & 2 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\emph{Тэмдэглэл: энэ орчинд} \texttt{python3-tk} \emph{суугаагүй байсан тул
+график интерфейсийг (Queue animation) энэ машин дээр ажиллуулж чадаагүй.
+6-р бүлгийн дүрслэлийн үнэлгээг Linux desktop буюу WSLg орчинд тусад нь
+хийсэн --- тэр хэсгийг багийн гишүүн биечлэн бөглөнө.}
+
+%============================================================
+\section{Build ба Run}
+
+\begin{center}
+\small
+\begin{tabular}{L{1.7cm}L{5.9cm}L{3.4cm}L{3.4cm}}
+\toprule
+Алхам & Команд & Хүлээгдсэн үр дүн & Бодит үр дүн \\
+\midrule
+Clone & \texttt{git clone https://github.com/} \texttt{mendamgalan/IV-2-10-sleeping-ta} &
+татагдана & \textbf{ЗӨВ} --- 23 файл, 2.9 MB \\[6pt]
+Build & \texttt{make -C sleeping-ta} &
+\texttt{libta.so} үүснэ & \textbf{ЗӨВ} --- \texttt{-Wall -Wextra -Wpedantic -Werror} дээр \textbf{нэг ч анхааруулгагүй} \\[6pt]
+Test & \texttt{make -C sleeping-ta test} &
+бүх тест давна & \textbf{ХЭСЭГЧИЛСЭН} --- 14 хөдөлгүүрийн тест давсан, UI тестийн модуль ачаалагдаагүй (6.1-ийг үзнэ үү) \\[6pt]
+Run & \texttt{make -C sleeping-ta run} &
+цонх нээгдэнэ & \textbf{ШАЛГААГҮЙ} --- энэ орчинд дэлгэц байхгүй \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Manual-аас гадуур хийх шаардлагатай болсон өөрчлөлт:} \emph{Байхгүй.}
+README-ийн алхмууд бичсэнээрээ ажилласан. Энэ нь сайн тал --- доорх 7.1-ийг
+үзнэ үү.
+
+%============================================================
+\section{Туршилт}
+
+\subsection{Үндсэн тест (тайланд бичсэнийг давтах)}
+
+\begin{center}
+\small
+\begin{tabular}{L{0.5cm}L{4.3cm}L{4.4cm}L{4.5cm}}
+\toprule
+\# & Оролт / тохиргоо & Хүлээгдсэн үр дүн & Бодит үр дүн \\
+\midrule
+1 & \texttt{make test} (өөрийн тестийн багц) &
+18 тест, UI-ийнх нь SKIP &
+14 давсан, 4 UI тест \textbf{ачаалагдсангүй} (ImportError) \\[6pt]
+2 & \texttt{resource\_failure} --- \texttt{pthread\_create} / \texttt{sem\_init} алдаа оруулах &
+\texttt{sim\_init} нь $-3$ буцааж цэвэрлэнэ &
+\textbf{ЗӨВ} --- 3 нөхцөл бүгд амжилттай \\[6pt]
+3 & Сандал $=0$ (\texttt{test\_zero\_chairs}) &
+хэн ч хүлээхгүй, шууд буцна &
+\textbf{ЗӨВ} --- бидний бие даасан ажиллуулалтаар дараалал үргэлж хоосон, 228 татгалзал, 40 үйлчилгээ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Нэмэлт тест (өөрсдөө сонгосон)}
+
+\emph{Доорх тестүүдийг багийн тестийн багцаас гадуур, тусдаа бичсэн
+\texttt{ctypes} хөтлөгчөөр шууд} \texttt{libta.so} \emph{дээр ажиллуулсан.}
+
+\begin{center}
+\small
+\begin{tabular}{L{0.5cm}L{3.3cm}L{4.1cm}L{2.7cm}L{3.0cm}}
+\toprule
+\# & Тохиргоо & Яагаад сонгосон & Хүлээгдсэн & Бодит \\
+\midrule
+1 & 40 оюутан, 20 сандал, 300 tick & Дээд ачаалал --- дараалал халих, буфер хэтрэх эсэх &
+халихгүй & \textbf{ЗӨВ} --- 3813 ирэлт, 3593 татгалзал, snapshot 1340 байт (хязгаар 8192) \\[6pt]
+2 & Ижил seed-ээр хоёр удаа & Давтагдах чанарыг баталгаажуулах &
+ижил түүх & \textbf{ЗӨВ} --- журнал \textbf{байт байтаараа ижил} \\[6pt]
+3 & 20 оюутан, 5 сандал, 500 tick --- 7671 үйл явдлыг шалгах & Инвариант: хүлээгчийн тоо сандлын тооноос хэтрэх ёсгүй &
+0 зөрчил & \textbf{ЗӨВ} --- 0 зөрчил \\[6pt]
+4 & 6 хүчингүй оролт (оюутан $=0$, $=41$; сандал $=21$; \texttt{amin}$=0$; \texttt{min}$>$\texttt{max}) & Захын ба хүчингүй утгын боловсруулалт &
+бүгд татгалзана & \textbf{ЗӨВ} --- 6/6 нь C түвшинд татгалзсан \\[6pt]
+5 & \textbf{ThreadSanitizer} --- 3 ажиллуулалт $\times$ 200 tick, зэрэг \texttt{sim\_snapshot()} дуудлагатай & Хуваалцсан төлөв дээр уралдаан (data race) байгаа эсэх &
+0 race & \textbf{ЗӨВ} --- \textbf{нэг ч race илрээгүй} \\[6pt]
+6 & \textbf{AddressSanitizer + UBSan}, мөн \textbf{Valgrind} \texttt{--leak-check=full} & Санах ойн алдаа, алдагдал &
+0 алдаа & \textbf{ЗӨВ} --- алдаа, алдагдал \textbf{байхгүй} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+%============================================================
+\section{Дүрслэлийн үнэлгээ}
+\emph{Багшийн оноосон дүрслэл: \textbf{Queue animation}. Доорхийг график
+интерфейсийг биечлэн ажиллуулж бөглөв.}
+
+\begin{center}
+\small
+\begin{tabular}{L{9.4cm}L{2.0cm}L{3.0cm}}
+\toprule
+Шалгах асуулт & Тийм/Үгүй & Нотолгоо \\
+\midrule
+Оролт, тохиргоог өөрчлөхөд дүрслэл шинэчлэгдэж байна уу? & & \\[5pt]
+Дараалал дахь оюутны тоо бодит төлөвтэй нийцэж байна уу? & & \\[5pt]
+TA-ийн төлөв (унтаж / тусалж) зөв харагдаж байна уу? & & \\[5pt]
+Тэмдэглэгээ, legend, нэгж ойлгомжтой юу? & & \\[5pt]
+Алхамчилж харах эсвэл эргэн шалгах боломжтой юу? & & \\[5pt]
+Дүрслэл нь алгоритмыг тайлбарлах \emph{нотолгоо} болж байна уу? & & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Дүгнэлт:}\\[3mm]
+\noindent\rule{\textwidth}{0.4pt}
+
+\vspace{2mm}\noindent\rule{\textwidth}{0.4pt}
+
+%============================================================
+\section{Давуу тал}
+
+\textbf{1. TA нь \emph{бодитоор} блоклогддог --- ``унтах''-ыг дуурайгаагүй.}\\[2mm]
+\emph{Нотолгоо:} \texttt{src/engine.c:81} --- \texttt{wait\_sem(\&work)}.
+Оюутан байхгүй үед TA-ийн thread нь semaphore дээр зогсоно, завсарлагатай
+давталтаар (busy-wait) шалгаагүй. Энэ нь сурах бичгийн бодлогын мөн чанарыг
+зөв илэрхийлж байна. Мөн \texttt{wait\_sem} нь \texttt{EINTR}-ийг зөв
+боловсруулдаг (\texttt{engine.c:40--50}) --- энэ нарийн зүйлийг оюутны ажилд
+ховор хардаг.
+
+\vspace{3mm}
+\textbf{2. Алдаа оруулах (fault injection) тесттэй.}\\[2mm]
+\emph{Нотолгоо:} \texttt{tests/resource\_failure.c} нь макроор
+\texttt{pthread\_create} болон \texttt{sem\_init}-ийг орлуулж, 1-р thread,
+4-р thread, 6-р semaphore дээр зориудаар алдаа үүсгэнэ. Ингэснээр
+\emph{хэсэгчилсэн эхлэлийн цэвэрлэгээ} зөв эсэхийг шалгадаг --- ихэнх багт
+огт байдаггүй түвшний тест. Бид ажиллуулахад 3/3 нөхцөл амжилттай.
+
+\vspace{3mm}
+\textbf{3. Бүрэн бөгөөд үнэнч баримтжуулалт.}\\[2mm]
+\emph{Нотолгоо:} README нь энэ нь \emph{алхамчилсан загвар} бөгөөд ``чөлөөт
+OS scheduling-ийн race/stress benchmark \textbf{биш}'' гэдгийг өөрөө ил
+хэлсэн. Мөн Reset/хаахаас өмнө CSV экспортлох шаардлагыг анхааруулсан.
+Хязгаарлалтаа нуухгүй бичсэн нь ажлын найдвартай байдлыг нэмэгдүүлж байна.
+Нэмж GitHub Actions CI нь push бүрд warnings-as-errors build болон Xvfb-тэй
+UI тест ажиллуулдаг.
+
+%============================================================
+\newpage
+\section{Асуудал}
+
+\begin{center}
+\small
+\begin{tabular}{L{1.9cm}L{5.4cm}L{3.4cm}L{3.5cm}}
+\toprule
+Priority & Асуудал (давтах алхамтай) & Нөлөө & Сайжруулах санал \\
+\midrule
+Critical & \emph{Илрээгүй.} & --- & --- \\[8pt]
+Major &
+\texttt{make test} нь \texttt{python3-tk} суугаагүй орчинд SKIP биш
+\textbf{ERROR} болно. Давтах: \texttt{python3-tk}-гүй Linux дээр
+\texttt{make -C sleeping-ta test}. Хүлээгдсэн: README-ийн дагуу UI тест
+SKIP. Бодит: \texttt{tests/test\_ui.py:3} дахь модулийн түвшний
+\texttt{import tkinter} нь \texttt{ImportError} өгч, 14 тест давсан хэдий ч
+\texttt{make} нь \texttt{Error 2} буцаана. &
+Шүүмжлэгч эсвэл багш ``тест унасан'' гэж буруу дүгнэх эрсдэлтэй.
+Дэлгэцгүй сервер дээр CI хийх боломжгүй. &
+\texttt{test\_ui.py}-д импортыг хамгаалах:
+хамгаалсан \texttt{try / except ImportError} хэлбэрт
+оруулж \texttt{unittest.SkipTest} өгөх (8.1-ийг үзнэ үү).
+Ингэснээр одоогийн дэлгэцгүй SKIP-тэй адил ажиллана. \\[8pt]
+Minor &
+\texttt{sim\_recent\_events()} ба \texttt{sim\_events()} нь хуваалцсан
+төлөвийг (\texttt{recent[]}, \texttt{recent\_count}, \texttt{journal},
+\texttt{journal\_error}) \texttt{mu}-г \textbf{барилгүй} уншина
+(\texttt{engine.c:322--363}). Одоогийн хяналтын урсгал зөвхөн tick-ийн
+хооронд дууддаг тул аюулгүй --- бид ThreadSanitizer-ээр баталсан. &
+Инвариантыг зөвхөн \emph{дуудагчийн сахилга} барьж байна. Хожим UI-г
+өөр thread-ээс шинэчилбэл \textbf{чимээгүй} race үүснэ. &
+Эдгээр функцийг ч \texttt{mu} дотор оруулах, эсвэл
+\texttt{assert(!in\_tick)} маягийн хамгаалалт нэмэх. \\[8pt]
+Minor &
+\texttt{sim\_snapshot()} дотор \texttt{snprintf}-ийн буцах утгыг шалгалгүй
+\texttt{p}-д нэмж байна (\texttt{engine.c:300--316}). \texttt{snprintf} нь
+таслагдсан үед \emph{бичих байсан} уртыг буцаадаг тул \texttt{p} нь
+буферээс хэтэрч, \texttt{sizeof(out) - (size\_t)p} нь асар том \texttt{size\_t}
+болно. &
+Одоогийн хязгаараар (40 оюутан $\to$ 1340 байт, буфер 8192) \textbf{хүрэхгүй}
+--- бид дээд ачаалал дээр хэмжсэн. Гэхдээ \texttt{MAX\_STUDENTS} нэмэгдвэл
+чимээгүй буфер халилт болно. &
+Үлдсэн зайг шалгах:
+\texttt{if (p >= (int)sizeof(out))} \dots{} эсвэл туслах
+\texttt{append()} функц ашиглах. \\[8pt]
+Suggestion &
+Хувилбарын \textbf{tag байхгүй} (\texttt{git tag} хоосон) ба
+\texttt{git shortlog -sn --all} нь \textbf{4} нэр л харуулж байна
+(B242270008: 12, Mend-Amgalan: 4, Orgilsakhan: 2, manlaibaatarmaggir: 1). &
+``9 дэх долоо хоногт нийтэлсэн хувилбар'' гэдгийг заах боломжгүй. Багийн
+гишүүн бүрийн хувь нэмэр \texttt{git log}-оос бүрэн харагдахгүй байж
+магадгүй. &
+\texttt{v1.0} tag тавих. Commit хийгээгүй гишүүд өөрийн нэрээр дор хаяж нэг
+commit хийх, эсвэл хувь нэмрээ README-д тодорхой бичих. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{center}
+\small
+\begin{tabular}{lL{11.0cm}}
+\toprule
+Түвшин & Утга \\
+\midrule
+Critical & Үндсэн функц ажиллахгүй эсвэл буруу үр дүн \\
+Major & Гол тест, дүрслэл, Manual ноцтой дутуу \\
+Minor & Үндсэн ажиллагаанд саад багатай чанарын асуудал \\
+Suggestion & Нэмэлт сайжруулалтын санал \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+%============================================================
+\section{Сайжруулах санал}
+
+\textbf{1.} \texttt{tests/test\_ui.py}-ийн 3-р мөрөнд байгаа
+\texttt{import tkinter as tk} нь \texttt{python3-tk} суугаагүй орчинд бүх
+тестийн багцыг унагааж байна. Үүнийг хамгаалсан импорт болгох саналтай:
+
+\begin{lstlisting}[language=Python]
+try:
+    import tkinter as tk
+except ImportError:
+    raise unittest.SkipTest('tkinter (python3-tk) суугаагүй')
+\end{lstlisting}
+
+Ингэснээр одоогийн ``дэлгэц байхгүй'' SKIP-тэй ижил зан гаргаж, README-д
+бичсэн ``UI-ийн 4 тест SKIP болно'' гэсэн амлалт бүх орчинд үнэн болно.
+
+\vspace{3mm}\textbf{2.} \texttt{sim\_snapshot()} дотор \texttt{snprintf}-ийн
+үр дүнг хуримтлуулахын өмнө таслагдалтыг шалгах. Одоо хүрэхгүй ч,
+\texttt{MAX\_STUDENTS}-ийг 40-өөс дээш болговол чимээгүй буфер халилт болно.
+Хамгийн энгийн шийдэл нь үлдсэн зайг шалгадаг жижиг \texttt{append()}
+туслах функц бичих.
+
+\vspace{3mm}\textbf{3.} \texttt{v1.0} tag тавьж, README-д багийн гишүүн
+бүрийн хариуцсан ажлын хүснэгт нэмэх. Одоо \texttt{git shortlog} 4 нэр
+харуулж байгаа тул багш гишүүн бүрийн оролцоог шалгахад хүндрэлтэй.
+Хүснэгт нь \texttt{git}-ийн түүхтэй хамт бүрэн зураг өгнө.
+
+%============================================================
+\section{Дүгнэлт}
+
+\textbf{1.} \texttt{test\_ui.py}-ийн импортыг хамгаалж, \texttt{make test}
+нь \texttt{python3-tk}-гүй орчинд ч бүрэн давдаг болгох. \emph{(Хамгийн
+хялбар, хамгийн их нөлөөтэй засвар --- 3 мөр.)}
+
+\vspace{3mm}\textbf{2.} \texttt{sim\_recent\_events()} /
+\texttt{sim\_events()}-ийн түгжээний гэрээг кодод илэрхий болгох (түгжээ
+дотор оруулах эсвэл assert нэмэх), мөн \texttt{sim\_snapshot()}-ийн
+\texttt{snprintf} таслагдалтыг шалгах.
+
+\vspace{3mm}\textbf{3.} \texttt{v1.0} tag тавьж, багийн гишүүдийн хариуцсан
+ажлыг README-д баримтжуулах.
+
+\vspace{6mm}
+\noindent\textbf{Ерөнхий үнэлгээ:}
+Энэ бол \textbf{маш сайн бэлтгэгдсэн} ажил. Хөдөлгүүр нь бодит POSIX thread,
+semaphore, mutex ашигласан; TA нь semaphore дээр бодитоор блоклогддог;
+хуваалцсан төлөв бүхэлдээ нэг түгжээгээр хамгаалагдсан. Бидний бие даасан
+шалгалтаар \textbf{ThreadSanitizer, AddressSanitizer, UBSan, Valgrind
+дөрвүүлээ цэвэр}; ижил seed дээр үр дүн байт байтаараа давтагдана;
+500 tick, 7671 үйл явдал дотор ``хүлээгч $\le$ сандал'' инвариант
+нэг ч удаа зөрчигдөөгүй; хүчингүй оролт 6/6 татгалзагдсан. Компайл нь
+\texttt{-Werror} дээр нэг ч анхааруулгагүй.
+
+Илэрсэн цорын ганц ноцтой асуудал нь кодын биш, \textbf{тестийн багцын}
+асуудал --- нэмэлт сангүй орчинд SKIP хийх ёстой UI тест нь бүх багцыг
+унагааж байна. Үлдсэн хоёр нь одоогоор хүрэхгүй боловч ирээдүйд аюултай
+болж болох \emph{далд} эрсдэлүүд. Эдгээрийг засвал ажил бүрэн гүйцэд болно.
+
+\end{document}
