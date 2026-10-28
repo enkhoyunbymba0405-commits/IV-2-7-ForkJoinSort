@@ -18,6 +18,7 @@ public class MainWindow extends JFrame {
     private final JLabel status = new JLabel("Бэлэн.");
     private final JSlider stepSlider = new JSlider(0, 1, 1);
     private final JLabel legend = new JLabel();
+    private final JLabel stepInfo = new JLabel(" ");
 
     private final JSpinner spSize   = new JSpinner(new SpinnerNumberModel(64, 0, 5_000_000, 1));
     private final JSpinner spThresh = new JSpinner(new SpinnerNumberModel(8, 1, 1_000_000, 1));
@@ -43,8 +44,13 @@ public class MainWindow extends JFrame {
         center.add(tree, BorderLayout.CENTER);
 
         JPanel south = new JPanel(new BorderLayout(6, 0));
-        south.add(new JLabel("Алхам:"), BorderLayout.WEST);
-        south.add(stepSlider, BorderLayout.CENTER);
+        JPanel row = new JPanel(new BorderLayout(6, 0));
+        row.add(new JLabel("Алхам:"), BorderLayout.WEST);
+        row.add(stepSlider, BorderLayout.CENTER);
+        south.add(row, BorderLayout.NORTH);
+        stepInfo.setFont(new Font("SansSerif", Font.BOLD, 12));
+        stepInfo.setBorder(BorderFactory.createEmptyBorder(2, 6, 4, 6));
+        south.add(stepInfo, BorderLayout.SOUTH);
         center.add(south, BorderLayout.SOUTH);
         add(center, BorderLayout.CENTER);
 
@@ -63,7 +69,10 @@ public class MainWindow extends JFrame {
         add(status, BorderLayout.SOUTH);
 
         tree.setOnSelect(this::showNode);
-        stepSlider.addChangeListener(e -> tree.setVisibleCount(stepSlider.getValue()));
+        stepSlider.addChangeListener(e -> {
+            tree.setVisibleCount(stepSlider.getValue());
+            stepInfo.setText(cbStep.isSelected() ? tree.stepLabel(stepSlider.getValue()) : " ");
+        });
         stepSlider.setEnabled(false);
 
         setSize(1280, 800);
@@ -125,7 +134,7 @@ public class MainWindow extends JFrame {
         cbAlgo.setSelectedIndex(0); cbPat.setSelectedIndex(0);
         tfCustom.setText(""); cbStep.setSelected(false);
         tree.setNodes(null); info.setText(""); legend.setText("");
-        stepSlider.setEnabled(false);
+        stepSlider.setEnabled(false); stepInfo.setText(" ");
         status.setText("Анхны тохиргоонд буцлаа.");
     }
 
@@ -145,11 +154,12 @@ public class MainWindow extends JFrame {
             result = SortRunner.run(cfg.copy());
 
             tree.setNodes(result.nodes);
-            int total = Math.max(1, result.nodes.size());
+            int total = Math.max(1, tree.totalSteps());
             stepSlider.setMinimum(0);
             stepSlider.setMaximum(total);
             stepSlider.setValue(cbStep.isSelected() ? 0 : total);
             stepSlider.setEnabled(cbStep.isSelected());
+            stepInfo.setText(cbStep.isSelected() ? tree.stepLabel(stepSlider.getValue()) : " ");
             tree.setVisibleCount(stepSlider.getValue());
 
             info.setText(summary(result));
@@ -216,7 +226,10 @@ public class MainWindow extends JFrame {
             sb.append(String.format("<font color='#%02x%02x%02x'>■</font> %s<br>",
                     c.getRed(), c.getGreen(), c.getBlue(), e.getKey()));
         }
-        sb.append("<br>Дүүрэн = навч · цайвар = дотоод</html>");
+        sb.append("<br>Дүүрэн = навч · цайвар = дотоод"
+                + "<br><b>Алхамчилсан горимд:</b>"
+                + "<br>цагаан дотортой = FORK хийгдсэн, JOIN хүлээж байна"
+                + "<br>будсан = JOIN дууссан</html>");
         return sb.toString();
     }
 

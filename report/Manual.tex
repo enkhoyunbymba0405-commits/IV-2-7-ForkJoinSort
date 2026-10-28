@@ -7,6 +7,7 @@
 \usepackage[margin=2.1cm]{geometry}
 \usepackage{xcolor}
 \usepackage{graphicx}
+\usepackage{float}
 \usepackage{listings}
 \usepackage{enumitem}
 \usepackage{booktabs}
@@ -219,7 +220,10 @@ Quicksort-ийн модонд их нөлөөтэй; Mergesort-д нөлөөгү
 \textbf{Өөрийн оролт} & \texttt{7, 12, 19, 3} &
 Бичсэн тохиолдолд дээрх хэмжээ ба хэв маягийг \emph{дардаг} \\
 \textbf{Алхамчилсан горим} & тэмдэглэгээ &
-Мод шууд биш, гүйлгэгчээр алхам алхмаар ургана \\
+Мод шууд биш, гүйлгэгчээр \textbf{үйл явдал тутам} ургана. Зангилаа бүр
+\textbf{FORK} (хуваагдав) ба \textbf{JOIN} (хүүхдүүд дуусаж merge хийв) гэсэн
+хоёр алхам эзэлнэ. Гүйлгэгчийн доор тухайн алхмын тайлбар --- аль муж, аль
+үйлдэл, аль урсгал дээр --- гарч харагдана \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -370,7 +374,7 @@ java -Xss16m -cp out forkjoinsort.Main --headless -n 1000
 \subsection{Үндсэн тестийн өгөгдөл}
 \begin{center}
 \small
-\begin{tabular}{lL{6.2cm}L{5.0cm}}
+\begin{tabular}{lL{5.3cm}L{4.3cm}}
 \toprule
 Файл & Агуулга & Хүлээгдэх үр дүн \\
 \midrule

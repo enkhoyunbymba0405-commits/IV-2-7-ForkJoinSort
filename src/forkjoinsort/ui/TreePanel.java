@@ -29,6 +29,16 @@ public class TreePanel extends JPanel {
     private final Map<String, Color> threadColor = new LinkedHashMap<>();
     private TraceNode root;
 
+    /** Нэг алхам = нэг ҮЙЛ ЯВДАЛ: зангилаа FORK хийгдэв, эсвэл JOIN хийгдэж хаагдав. */
+    private static final int FORK = 0, JOIN = 1;
+    private static final class Ev {
+        final TraceNode n; final int type; final long t;
+        Ev(TraceNode n, int type, long t) { this.n = n; this.type = type; this.t = t; }
+    }
+    private final List<Ev> events = new ArrayList<>();
+    /** 0 = харагдахгүй, 1 = нээгдсэн (ажиллаж байна), 2 = хаагдсан (join дууссан) */
+    private final Map<Integer, Integer> state = new HashMap<>();
+
     private double zoom = 1.0;
     private int panX = 0, panY = 0;
     private int visibleCount = Integer.MAX_VALUE;   // алхамчилсан горимд
@@ -73,7 +83,7 @@ public class TreePanel extends JPanel {
     /** Шинэ модыг ачаална. */
     public void setNodes(List<TraceNode> ns) {
         this.nodes = (ns == null) ? Collections.<TraceNode>emptyList() : ns;
-        children.clear(); pos.clear(); threadColor.clear();
+        children.clear(); pos.clear(); threadColor.clear(); events.clear(); state.clear();
         root = null; selected = null; visibleCount = Integer.MAX_VALUE;
         for (TraceNode n : nodes) {
             if (n.parentId < 0) root = n;
@@ -83,6 +93,7 @@ public class TreePanel extends JPanel {
         }
         for (List<TraceNode> ch : children.values())
             ch.sort(Comparator.comparingInt(x -> x.lo));
+        buildEvents();
         layoutTree();
         fit();
         repaint();
@@ -133,8 +144,50 @@ public class TreePanel extends JPanel {
         repaint();
     }
 
-    public void setVisibleCount(int c) { this.visibleCount = c; repaint(); }
-    public int totalSteps() { return nodes.size(); }
+    /** FORK ба JOIN үйл явдлуудыг бодит хугацаагаар эрэмбэлнэ. */
+    private void buildEvents() {
+        for (TraceNode n : nodes) {
+            events.add(new Ev(n, FORK, n.forkNanos));
+            events.add(new Ev(n, JOIN, n.doneNanos));
+        }
+        events.sort((a, b) -> {
+            if (a.t != b.t) return Long.compare(a.t, b.t);
+            if (a.type != b.type) return Integer.compare(a.type, b.type);
+            return Integer.compare(a.n.id, b.n.id);
+        });
+    }
+
+    /** Эхний c үйл явдлыг хэрэглэж, зангилаа бүрийн төлөвийг тооцно. */
+    public void setVisibleCount(int c) {
+        this.visibleCount = c;
+        state.clear();
+        int lim = Math.min(c, events.size());
+        for (int i = 0; i < lim; i++) {
+            Ev e = events.get(i);
+            state.put(e.n.id, e.type == FORK ? 1 : 2);
+        }
+        repaint();
+    }
+
+    public int totalSteps() { return events.size(); }
+
+    /** Тухайн алхмын тайлбар: юу, хаана, аль урсгал дээр болсныг нэг мөрөөр. */
+    public String stepLabel(int k) {
+        if (events.isEmpty()) return " ";
+        if (k <= 0) return "Алхам 0 / " + events.size() + " — эхлэл";
+        Ev e = events.get(Math.min(k, events.size()) - 1);
+        String w = e.n.thread == null ? "?" : e.n.thread.replaceAll(".*-(worker-\\d+)$", "$1");
+        String what;
+        if (e.type == FORK)
+            what = e.n.leaf ? "эрэмбэлж эхлэв (навч, insertion sort)"
+                            : "FORK — хоёр дэд ажилд хуваав";
+        else
+            what = e.n.leaf ? "дууслаа — эцэгтээ JOIN хийхэд бэлэн"
+                            : "JOIN — хоёр хүү дуусаж, merge хийв";
+        return "Алхам " + Math.min(k, events.size()) + " / " + events.size()
+             + " — [" + e.n.lo + ", " + e.n.hi + ") n=" + e.n.size()
+             + " · " + what + " · " + w;
+    }
     public Map<String, Color> threadColors() { return threadColor; }
 
     private TraceNode hit(int sx, int sy) {
@@ -161,6 +214,13 @@ public class TreePanel extends JPanel {
         paintTree((Graphics2D) g, getWidth(), getHeight());
     }
 
+    /** Алхамчилсан горимд тухайн зангилааны төлөв; эс бөгөөс бүгд хаагдсан. */
+    private int stateOf(TraceNode n, boolean stepping) {
+        if (!stepping) return 2;
+        Integer v = state.get(n.id);
+        return v == null ? 0 : v;
+    }
+
     /** Цонхгүйгээр зураг болгон гаргахад мөн ашиглагдана (headless screenshot). */
     public void paintTree(Graphics2D g2, int W, int H) {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -174,19 +234,19 @@ public class TreePanel extends JPanel {
             return;
         }
 
-        Set<Integer> shown = new HashSet<>();
-        int lim = Math.min(visibleCount, nodes.size());
-        for (int i = 0; i < lim; i++) shown.add(nodes.get(i).id);
+        // Алхамчилсан горимд зөвхөн болсон үйл явдлууд харагдана.
+        // visibleCount = MAX бол бүх зангилаа ХААГДСАН төлөвтэй (ердийн дүрслэл).
+        boolean stepping = visibleCount < Integer.MAX_VALUE;
 
         // --- ирмэгүүд ---
         g2.setStroke(new BasicStroke(Math.max(1f, (float) (1.2 * zoom))));
         for (TraceNode n : nodes) {
-            if (!shown.contains(n.id)) continue;
+            if (stateOf(n, stepping) == 0) continue;
             List<TraceNode> ch = children.get(n.id);
             if (ch == null) continue;
             Point p = pos.get(n.id);
             for (TraceNode c : ch) {
-                if (!shown.contains(c.id)) continue;
+                if (stateOf(c, stepping) == 0) continue;
                 Point q = pos.get(c.id);
                 if (p == null || q == null) continue;
                 g2.setColor(new Color(0xB0, 0xB8, 0xC0));
@@ -200,7 +260,8 @@ public class TreePanel extends JPanel {
         Font f = new Font("SansSerif", Font.PLAIN, Math.max(1, fs));
         g2.setFont(f);
         for (TraceNode n : nodes) {
-            if (!shown.contains(n.id)) continue;
+            int st = stateOf(n, stepping);
+            if (st == 0) continue;
             Point p = pos.get(n.id);
             if (p == null) continue;
             double w = nodeW * zoom, h = nodeH * zoom;
@@ -208,17 +269,31 @@ public class TreePanel extends JPanel {
             if (x + w < 0 || y + h < 0 || x > W || y > H) continue;
 
             Color base = threadColor.getOrDefault(n.thread == null ? "?" : n.thread, Color.GRAY);
-            g2.setColor(n.leaf ? base : new Color(base.getRed(), base.getGreen(), base.getBlue(), 90));
-            g2.fill(new RoundRectangle2D.Double(x, y, w, h, 6 * zoom, 6 * zoom));
+            boolean open = (st == 1);   // нээгдсэн ч хараахан JOIN хийгдээгүй
 
-            g2.setStroke(new BasicStroke(n == selected ? 2.5f : (n.leaf ? 1.6f : 0.9f)));
-            g2.setColor(n == selected ? Color.BLACK : base.darker());
-            g2.draw(new RoundRectangle2D.Double(x, y, w, h, 6 * zoom, 6 * zoom));
+            if (open) {                 // АЖИЛЛАЖ БАЙНА — цагаан дотортой, зузаан хүрээтэй
+                g2.setColor(Color.WHITE);
+                g2.fill(new RoundRectangle2D.Double(x, y, w, h, 6 * zoom, 6 * zoom));
+                g2.setStroke(new BasicStroke(Math.max(1.8f, (float) (2.2 * zoom))));
+                g2.setColor(base);
+                g2.draw(new RoundRectangle2D.Double(x, y, w, h, 6 * zoom, 6 * zoom));
+            } else {                    // ХААГДСАН — join дууссан
+                g2.setColor(n.leaf ? base : new Color(base.getRed(), base.getGreen(), base.getBlue(), 90));
+                g2.fill(new RoundRectangle2D.Double(x, y, w, h, 6 * zoom, 6 * zoom));
+                g2.setStroke(new BasicStroke(n == selected ? 2.5f : (n.leaf ? 1.6f : 0.9f)));
+                g2.setColor(n == selected ? Color.BLACK : base.darker());
+                g2.draw(new RoundRectangle2D.Double(x, y, w, h, 6 * zoom, 6 * zoom));
+            }
+            if (n == selected) {
+                g2.setStroke(new BasicStroke(2.5f));
+                g2.setColor(Color.BLACK);
+                g2.draw(new RoundRectangle2D.Double(x, y, w, h, 6 * zoom, 6 * zoom));
+            }
 
             if (fs >= 7) {
                 String s = n.size() + "";
                 if (w > 54) s = "[" + n.lo + "," + n.hi + ") " + n.size();
-                g2.setColor(n.leaf ? Color.WHITE : Color.DARK_GRAY);
+                g2.setColor(open ? base.darker() : (n.leaf ? Color.WHITE : Color.DARK_GRAY));
                 FontMetrics fm = g2.getFontMetrics();
                 g2.drawString(s, (float) (x + (w - fm.stringWidth(s)) / 2),
                                  (float) (y + h / 2 + fm.getAscent() / 2.0 - 1));
