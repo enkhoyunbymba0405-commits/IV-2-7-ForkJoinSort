@@ -2,6 +2,7 @@ package forkjoinsort;
 
 import java.util.Random;
 
+/** Туршилтын өгөгдөл үүсгэнэ. Нэг өгөгдлийг эх кодод ХАТУУ ТОГТООХГҮЙ. */
 public final class DataGenerator {
 
     public enum Pattern {
@@ -32,6 +33,7 @@ public final class DataGenerator {
         return a;
     }
 
+    /** Гараас оруулсан мөрийг задлана: "7, 12, 19, 3" гэх мэт. */
     public static Integer[] parse(String text) {
         String t = text.trim();
         if (t.isEmpty()) return new Integer[0];
