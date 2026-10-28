@@ -118,6 +118,39 @@ H5 & \texttt{ALL\_EQUAL} дээр Quicksort хамгийн хурдан &
 
 \section{Үр дүн}
 
+\subsection{Программын бодит дэлгэцийн агшин}
+
+\begin{figure}[H]\centering
+\includegraphics[width=\textwidth]{../docs/images/ui_book_merge.png}
+\caption{Номын жишээ (Figure 4.27), threshold $=2$. Зүүн талд тохиргооны
+удирдлага, дунд нь рекурсийн мод, баруун талд үр дүнгийн самбар:
+зангилаа 11, навч 6, гүн 3, зөв эсэх --- ЗӨВ. Зангилааны өнгө нь тухайн
+ажлыг гүйцэтгэсэн ажилчин урсгалыг заана.}
+\end{figure}
+
+\begin{figure}[H]\centering
+\includegraphics[width=\textwidth]{../docs/images/ui_node_select.png}
+\caption{Зангилаа сонгосон байдал. $[2,5)$ зангилаа дээр дарахад баруун
+талд тухайн мужийн утгууд эрэмбэлэхийн \emph{өмнө} ($19, 3, 18$) ба
+\emph{дараа} ($3, 18, 19$), мөн гүйцэтгэсэн урсгал, эхэлсэн/дууссан хугацаа
+харагдана.}
+\end{figure}
+
+\begin{figure}[H]\centering
+\includegraphics[width=\textwidth]{../docs/images/ui_step_mode.png}
+\caption{Алхамчилсан горим. Доорх гүйлгэгчийг чирэхэд мод алхам алхмаар
+ургана --- fork, compute, join гурван үе шат дарааллаараа харагдана.
+Энд 11 зангилааны 4 нь үүссэн агшин.}
+\end{figure}
+
+\begin{figure}[H]\centering
+\includegraphics[width=\textwidth]{../docs/images/ui_alleq_quick.png}
+\caption{Quicksort, \texttt{ALL\_EQUAL} өгөгдөл, $n=400$. Гурван талт
+хуваалтын ачаар бүх элемент нэг алхамд эцсийн байрандаа суусан тул мод
+\textbf{ганц зангилаа} болов (гүн 0). Mergesort ижил өгөгдөл дээр модоо
+бүрэн задалдагтай харьцуул.}
+\end{figure}
+
 \subsection{Зөв ажиллагаа}
 \begin{lstlisting}[language=bash]
 $ ./test.sh
