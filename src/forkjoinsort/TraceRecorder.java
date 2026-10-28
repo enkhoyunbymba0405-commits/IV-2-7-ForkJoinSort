@@ -6,15 +6,8 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Олон урсгалаас зэрэг бичигддэг тул БҮХ бүтэц нь thread-safe байх ёстой.
- * Энэ нь өөрөө 6-7-р бүлгийн синхрончлолын жишээ юм:
- *   - AtomicInteger      : зангилааны дугаарыг атомикаар олгоно (цоожгүй)
- *   - ConcurrentLinkedQueue : цоожгүй (lock-free) дараалал
- */
 public class TraceRecorder {
 
-    /** Энэ хэмжээнээс жижиг мужийн утгуудыг хуулж хадгална (санах ой хэмнэнэ). */
     public static final int SNAPSHOT_MAX = 48;
 
     private final AtomicInteger nextId = new AtomicInteger(0);
@@ -56,7 +49,6 @@ public class TraceRecorder {
         return sb.toString();
     }
 
-    /** Дуусмагц дуудна: дугаараар эрэмбэлсэн тогтвортой жагсаалт буцаана. */
     public List<TraceNode> snapshotNodes() {
         List<TraceNode> list = new ArrayList<>(nodes);
         Collections.sort(list, (a, b) -> Integer.compare(a.id, b.id));
