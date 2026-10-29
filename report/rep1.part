@@ -159,6 +159,77 @@ UI-ийн зүүн самбар + командын мөрийн параметр
 \end{tabular}
 \end{center}
 
+\subsection{Сурах бичгийн fork-join загвар}
+
+Доорх гурван бүдүүвч нь сурах бичгийн 4.5.2 хэсгийн (х.~180--184) үндсэн
+санааг харуулна. Зургуудыг номын Зураг 4.16, 4.17, 4.19-ийн \emph{агуулгаар}
+бид өөрсдөө зуров.
+
+\begin{figure}[H]\centering
+\begin{tikzpicture}[x=1cm,y=1cm,
+  t/.style={draw=accent,fill=accent!8,rounded corners=2pt,
+            font=\small,minimum width=2.2cm,minimum height=8mm},
+  lbl/.style={font=\scriptsize\itshape,inner sep=1pt}]
+\node (m1) at (0,0) {main thread};
+\coordinate (s) at (2.6,0);
+\coordinate (e) at (8.0,0);
+\node (m2) at (10.6,0) {main thread};
+\node[t] (t1) at (5.3, 1.1) {task};
+\node[t] (t2) at (5.3,-1.1) {task};
+\draw[-Stealth,thick] (m1) -- (s);
+\draw[-Stealth,dashed] (s) -- node[lbl,above left=-1pt] {fork} (t1.west);
+\draw[-Stealth,dashed] (s) -- node[lbl,below left=-1pt] {fork} (t2.west);
+\draw[-Stealth,dashed] (t1.east) -- node[lbl,above right=-1pt] {join} (e);
+\draw[-Stealth,dashed] (t2.east) -- node[lbl,below right=-1pt] {join} (e);
+\draw[-Stealth,thick] (e) -- (m2);
+\end{tikzpicture}
+\caption{Fork-join параллелизм: үндсэн урсгал дэд ажлуудыг \emph{fork} хийж,
+тэдгээр дуусахыг \emph{join}-оор хүлээгээд үр дүнг нэгтгэнэ
+(номын Зураг 4.16-ийн агуулгаар).}
+\end{figure}
+
+\begin{figure}[H]\centering
+\begin{tikzpicture}[x=1cm,y=1cm,
+  t/.style={draw=accent,fill=accent!8,ellipse,font=\scriptsize,
+            minimum width=1.5cm,minimum height=6mm},
+  lbl/.style={font=\tiny\itshape,inner sep=1.2pt,fill=white}]
+\node[t] (r)   at (0,0)      {task};
+\node[t] (a)   at (3.2, 1.8) {task};
+\node[t] (b)   at (3.2,-1.8) {task};
+\node[t] (a1)  at (6.4, 2.9) {task};
+\node[t] (a2)  at (6.4, 0.9) {task};
+\node[t] (b1)  at (6.4,-0.9) {task};
+\node[t] (b2)  at (6.4,-2.9) {task};
+\foreach \p/\c in {r/a, r/b, a/a1, a/a2, b/b1, b/b2} {
+  \draw[-Stealth,bend left=28] (\p) to node[lbl,pos=0.5] {fork} (\c);
+  \draw[-Stealth,bend left=28,gray] (\c) to node[lbl,pos=0.5] {join} (\p);
+}
+\end{tikzpicture}
+\caption{Java дахь fork-join: даалгавар бүр дахин хуваагдаж, хүүхдүүд нь
+дуусмагц эцэг рүүгээ join хийнэ --- энэ нь яг манай програмын
+\textbf{рекурсийн мод} (номын Зураг 4.17-ийн агуулгаар).}
+\end{figure}
+
+\begin{figure}[H]\centering
+\begin{tikzpicture}[x=1cm,y=1cm,
+  c/.style={draw,font=\small,minimum width=4.0cm,minimum height=11mm,align=center},
+  m/.style={draw,font=\small,minimum width=4.0cm,minimum height=7mm,align=center}]
+\node[c] (fjt) at (0,0) {\texttt{ForkJoinTask <V>}\\[-1pt]\footnotesize\emph{abstract}};
+\node[c] (rt)  at (-2.6,-2.6) {\texttt{RecursiveTask <V>}\\[-1pt]\footnotesize\emph{abstract}};
+\node[c] (ra)  at ( 2.6,-2.6) {\texttt{RecursiveAction}\\[-1pt]\footnotesize\emph{abstract}};
+\node[m] (rtm) at (-2.6,-3.75) {\texttt{V compute()}};
+\node[m] (ram) at ( 2.6,-3.75) {\texttt{void compute()}};
+\draw (rt.north) -- ++(0,0.5) coordinate (l);
+\draw (ra.north) -- ++(0,0.5) coordinate (r);
+\draw (l) -- (r);
+\draw[-{Triangle[open,length=3mm,width=3mm]}] ($(l)!0.5!(r)$) -- (fjt.south);
+\end{tikzpicture}
+\caption{Java-гийн fork-join классын шатлал. Эрэмбэлэлт нь утга
+\emph{буцаадаггүй} тул бид баруун талын \texttt{RecursiveAction}-ийг
+өргөтгөсөн --- номын Project 3-ын шууд заалт
+(номын Зураг 4.19-ийн агуулгаар).}
+\end{figure}
+
 \section{Онолын үндэс}
 
 \subsection{Fork-Join загвар}

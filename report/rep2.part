@@ -5,25 +5,25 @@
 \begin{center}
 \begin{tikzpicture}[x=1cm,y=1cm,
  b/.style={draw=accent,fill=accent!10,rounded corners=3pt,font=\scriptsize,
-           minimum height=8mm,text width=3.0cm,align=center},
+           minimum height=9mm,text width=2.7cm,align=center},
  g/.style={draw=gray!60,fill=gray!8,rounded corners=3pt,font=\scriptsize,
-           minimum height=8mm,text width=3.0cm,align=center}]
-\node[b] (ui)  at (0,0)     {\textbf{MainWindow}\\удирдлага, статистик};
-\node[b] (tp)  at (4.2,0)   {\textbf{TreePanel}\\рекурсийн мод зурах};
-\node[g] (cfg) at (0,-1.7)  {\textbf{RunConfig}\\параметр + шалгалт};
-\node[g] (run) at (4.2,-1.7){\textbf{SortRunner}\\туршилт ажиллуулах};
-\node[g] (alg) at (2.1,-3.4){\textbf{MergesortAction}\\\textbf{QuicksortAction}};
-\node[g] (seq) at (6.6,-3.4){\textbf{SequentialSort}\\insertion, merge, partition3};
-\node[g] (tr)  at (-2.3,-3.4){\textbf{TraceRecorder}\\thread-safe бүртгэл};
-\node[g] (dg)  at (-2.3,-1.7){\textbf{DataGenerator}\\өгөгдөл үүсгэх/задлах};
-\draw[-Stealth] (ui) -- (cfg);
+           minimum height=9mm,text width=2.7cm,align=center}]
+\node[b] (ui)  at (0,0)      {\textbf{MainWindow}\\удирдлага, статистик};
+\node[b] (tp)  at (4.4,0)    {\textbf{TreePanel}\\рекурсийн мод зурах};
+\node[g] (dg)  at (-4.4,-2.0){\textbf{DataGenerator}\\өгөгдөл үүсгэх, задлах};
+\node[g] (cfg) at (0,-2.0)   {\textbf{RunConfig}\\параметр + шалгалт};
+\node[g] (run) at (4.4,-2.0) {\textbf{SortRunner}\\туршилт ажиллуулах};
+\node[g] (tr)  at (-4.4,-4.0){\textbf{TraceRecorder}\\thread-safe бүртгэл};
+\node[g] (alg) at (0,-4.0)   {\textbf{MergesortAction}\\\textbf{QuicksortAction}};
+\node[g] (seq) at (4.4,-4.0) {\textbf{SequentialSort}\\insertion, merge, partition3};
+\draw[-Stealth] (ui)  -- (cfg);
 \draw[-Stealth] (cfg) -- (run);
+\draw[-Stealth] (dg)  -- (cfg);
 \draw[-Stealth] (run) -- (alg);
 \draw[-Stealth] (alg) -- (seq);
 \draw[-Stealth] (alg) -- (tr);
-\draw[-Stealth] (tr) to[bend left=12] (tp);
 \draw[-Stealth] (run) -- (tp);
-\draw[-Stealth] (dg) -- (run);
+\draw[-Stealth] (tr) to[bend left=22] (tp);
 \end{tikzpicture}
 \end{center}
 
