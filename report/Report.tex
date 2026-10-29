@@ -285,74 +285,56 @@ UI-ийн зүүн самбар + командын мөрийн параметр
 
 \subsection{Сурах бичгийн fork-join загвар}
 
-Доорх гурван бүдүүвч нь сурах бичгийн 4.5.2 хэсгийн (х.~180--184) үндсэн
-санааг харуулна. Зургуудыг номын Зураг 4.16, 4.17, 4.19-ийн \emph{агуулгаар}
-бид өөрсдөө зуров.
+Доорх гурван зураг нь сурах бичгийн 4.5.2 хэсгийн (х.~180--184) үндсэн
+санааг харуулна. Зургуудыг сурах бичгээс шууд авсан бөгөөд эх сурвалжийг
+тайлбар бүрт дурдав \cite{osc}.
 
 \begin{figure}[H]\centering
-\begin{tikzpicture}[x=1cm,y=1cm,
-  t/.style={draw=accent,fill=accent!8,rounded corners=2pt,
-            font=\small,minimum width=2.2cm,minimum height=8mm},
-  lbl/.style={font=\scriptsize\itshape,inner sep=1pt}]
-\node (m1) at (0,0) {main thread};
-\coordinate (s) at (2.6,0);
-\coordinate (e) at (8.0,0);
-\node (m2) at (10.6,0) {main thread};
-\node[t] (t1) at (5.3, 1.1) {task};
-\node[t] (t2) at (5.3,-1.1) {task};
-\draw[-Stealth,thick] (m1) -- (s);
-\draw[-Stealth,dashed] (s) -- node[lbl,above left=-1pt] {fork} (t1.west);
-\draw[-Stealth,dashed] (s) -- node[lbl,below left=-1pt] {fork} (t2.west);
-\draw[-Stealth,dashed] (t1.east) -- node[lbl,above right=-1pt] {join} (e);
-\draw[-Stealth,dashed] (t2.east) -- node[lbl,below right=-1pt] {join} (e);
-\draw[-Stealth,thick] (e) -- (m2);
-\end{tikzpicture}
+\includegraphics[width=0.94\textwidth]{../docs/images/book_fig416.png}
 \caption{Fork-join параллелизм: үндсэн урсгал дэд ажлуудыг \emph{fork} хийж,
-тэдгээр дуусахыг \emph{join}-оор хүлээгээд үр дүнг нэгтгэнэ
-(номын Зураг 4.16-ийн агуулгаар).}
+тэдгээр дуусахыг \emph{join}-оор хүлээгээд үр дүнг нэгтгэнэ.
+Эх сурвалж: \cite{osc}, Зураг 4.16.}
 \end{figure}
 
+Энэ бүдүүвчийн гурван үе шат манай кодод шууд харгалзана. \emph{Fork} нь
+\texttt{MergesortAction.compute()} доторх \texttt{invokeAll(left, right)}
+дуудлага; \emph{task} нь муж \texttt{[lo, mid)} ба \texttt{[mid, hi)}-г
+хариуцсан хоёр шинэ \texttt{RecursiveAction}; \emph{join} нь тэр хоёрын
+дуусахыг хүлээж, Mergesort-ын хувьд \texttt{SequentialSort.merge()}-ээр үр
+дүнг нэгтгэх алхам. Чухал ялгаа нь сурах бичгийн тэмдэглэснээр
+\emph{урсгалыг биш, даалгаврыг} үүсгэдэгт байгаа: хэдэн урсгал бодитоор
+ажиллахыг \texttt{ForkJoinPool} өөрөө шийднэ.
+
 \begin{figure}[H]\centering
-\begin{tikzpicture}[x=1cm,y=1cm,
-  t/.style={draw=accent,fill=accent!8,ellipse,font=\scriptsize,
-            minimum width=1.5cm,minimum height=6mm},
-  lbl/.style={font=\tiny\itshape,inner sep=1.2pt,fill=white}]
-\node[t] (r)   at (0,0)      {task};
-\node[t] (a)   at (3.2, 1.8) {task};
-\node[t] (b)   at (3.2,-1.8) {task};
-\node[t] (a1)  at (6.4, 2.9) {task};
-\node[t] (a2)  at (6.4, 0.9) {task};
-\node[t] (b1)  at (6.4,-0.9) {task};
-\node[t] (b2)  at (6.4,-2.9) {task};
-\foreach \p/\c in {r/a, r/b, a/a1, a/a2, b/b1, b/b2} {
-  \draw[-Stealth,bend left=28] (\p) to node[lbl,pos=0.5] {fork} (\c);
-  \draw[-Stealth,bend left=28,gray] (\c) to node[lbl,pos=0.5] {join} (\p);
-}
-\end{tikzpicture}
+\includegraphics[width=0.60\textwidth]{../docs/images/book_fig417.png}
 \caption{Java дахь fork-join: даалгавар бүр дахин хуваагдаж, хүүхдүүд нь
 дуусмагц эцэг рүүгээ join хийнэ --- энэ нь яг манай програмын
-\textbf{рекурсийн мод} (номын Зураг 4.17-ийн агуулгаар).}
+\textbf{рекурсийн мод}. Эх сурвалж: \cite{osc}, Зураг 4.17.}
 \end{figure}
 
+Энэ зураг бол багшаас манай сэдэвт оноосон дүрслэлийн шууд эх загвар юм:
+\texttt{TraceRecorder} нь ажиллах явцад зангилаа бүрийн \texttt{fork} ба
+\texttt{join} болсон агшинг бичиж авдаг тул \texttt{TreePanel} яг энэ
+бүтцийг дэлгэц дээр сэргээн зурдаг. Ялгаа нь зөвхөн зохион байгуулалтад:
+номын зурагт даалгаврууд чөлөөтэй тархсан бол бидэнд эцэг--хүүхдийн
+харьцаа түвшин бүрээр эрэмбэлэгдэн мод хэлбэртэй харагдана, зангилаа
+бүрийн өнгө нь түүнийг гүйцэтгэсэн ажилчин урсгалыг заана.
+
 \begin{figure}[H]\centering
-\begin{tikzpicture}[x=1cm,y=1cm,
-  c/.style={draw,font=\small,minimum width=4.0cm,minimum height=11mm,align=center},
-  m/.style={draw,font=\small,minimum width=4.0cm,minimum height=7mm,align=center}]
-\node[c] (fjt) at (0,0) {\texttt{ForkJoinTask <V>}\\[-1pt]\footnotesize\emph{abstract}};
-\node[c] (rt)  at (-2.6,-2.6) {\texttt{RecursiveTask <V>}\\[-1pt]\footnotesize\emph{abstract}};
-\node[c] (ra)  at ( 2.6,-2.6) {\texttt{RecursiveAction}\\[-1pt]\footnotesize\emph{abstract}};
-\node[m] (rtm) at (-2.6,-3.75) {\texttt{V compute()}};
-\node[m] (ram) at ( 2.6,-3.75) {\texttt{void compute()}};
-\draw (rt.north) -- ++(0,0.5) coordinate (l);
-\draw (ra.north) -- ++(0,0.5) coordinate (r);
-\draw (l) -- (r);
-\draw[-{Triangle[open,length=3mm,width=3mm]}] ($(l)!0.5!(r)$) -- (fjt.south);
-\end{tikzpicture}
+\includegraphics[width=0.66\textwidth]{../docs/images/book_fig419.png}
 \caption{Java-гийн fork-join классын шатлал. Эрэмбэлэлт нь утга
 \emph{буцаадаггүй} тул бид баруун талын \texttt{RecursiveAction}-ийг
-өргөтгөсөн --- номын Project 3-ын шууд заалт
-(номын Зураг 4.19-ийн агуулгаар).}
+өргөтгөсөн --- номын Project 3-ын шууд заалт.
+Эх сурвалж: \cite{osc}, Зураг 4.19.}
 \end{figure}
+
+Сурах бичгийн жишээ болох \texttt{SumTask} (Зураг 4.18) нь нийлбэр
+\emph{буцаадаг} тул \texttt{RecursiveTask<Integer>}-ийг өргөтгөдөг.
+Харин эрэмбэлэлт нь массивыг \emph{газар дээр нь} өөрчилдөг, шинэ утга
+буцаадаггүй --- иймээс манай \texttt{MergesortAction} ба
+\texttt{QuicksortAction} хоёулаа баруун талын \texttt{RecursiveAction}-ийг
+өргөтгөж, \texttt{void compute()}-ийг хэрэгжүүлсэн. Энэ бол дээрх
+хүснэгтийн 4-р шаардлагын хариу юм.
 
 \section{Онолын үндэс}
 
@@ -1026,6 +1008,118 @@ Fork-join параллелизмд хамгийн чухал шийдвэр нь
 бус \emph{бүтцийн дүрслэл} илүү хурдан илрүүлдэг нь энэ ажлын хамгийн
 практик сургамж байлаа.
 
+\section{Бэлэн код, сан, AI ашигласан тухай}
+
+Бие даалтын удирдамжийн 6-р хэсэгт \emph{``Бэлэн код, сан, AI ашигласан бол
+README-д тэмдэглэх бөгөөд үндсэн тайландаа тусгана''} гэж заасан. Энэ бүлэг
+нь тэр шаардлагын хариу бөгөөд ижил агуулга \texttt{README.md}-д бий.
+
+\subsection{Бэлэн код ба гадны сан}
+
+Гадны сан \textbf{ашиглаагүй}. Зөвхөн JDK-ийн стандарт сан:
+\texttt{java.util.concurrent} (ForkJoinPool, RecursiveAction),
+\texttt{javax.swing} (UI), \texttt{java.util} (жагсаалт, Random).
+Maven, Gradle, гуравдагч талын jar байхгүй --- репог clone хийгээд
+\texttt{javac} л байхад компайл хийгдэнэ.
+
+Эрэмбэлэх алгоритмын \textbf{бүх код} (insertion sort, merge, гурван талт
+хуваалт, pivot сонголт, Fork/Join задрал) энэ репозиторийн дотор өөрсдөө
+бичигдсэн. \texttt{java.util.Arrays.sort} нь зөвхөн
+\texttt{tests/TestSuite.java} дотор \emph{хариуг тулгах лавлагаа} болж
+ашиглагдсан бөгөөд үндсэн хэрэгжилтэд ямар ч байдлаар дуудагддаггүй.
+
+\subsection{Ашигласан AI туслахууд}
+
+\begin{center}
+\small
+\begin{tabular}{@{}p{2.3cm}>{\raggedright\arraybackslash}p{4.7cm}>{\raggedright\arraybackslash}p{6.7cm}@{}}
+\toprule
+\textbf{Туслах} & \textbf{Аль хэсэгт} & \textbf{Юунд ашигласан} \\
+\midrule
+Claude & Fork/Join цөм, тест, build скрипт, тайлан, вэб хувилбар &
+  Кодын хяналт (code review), алдааны оношилгоо, LaTeX-ийн бүтэц ба
+  Кирилл үсгийн тохиргоо, Windows \texttt{argfile}-ийн алдаа олох \\
+\addlinespace
+ChatGPT & Quicksort-ийн pivot, threshold, Swing-ийн зурах API &
+  Хоёр дахь санал авах, ойлгоогүй хэсгээ дахин тайлбарлуулах,
+  захын тохиолдлын жагсаалт гаргуулах \\
+\addlinespace
+Gemini & Онолын үндэс (work stealing, Amdahl), шүүмжийн бэлтгэл &
+  Сурах бичгийн ойлголтыг өөр үгээр тайлбарлуулж ойлголтоо шалгах \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Хариултуудыг харьцуулсан нь}
+
+Нэг асуултыг хоёр, гурван туслахад \emph{давхар} тавьж, хариуг нь тулгаж
+үзэх аргыг баримталсан. Энэ нь нэг загварын итгэлтэй боловч буруу хариуг
+шууд хүлээж авахаас сэргийлэх хамгийн хялбар арга байв. Зөрөлдсөн гурван
+тохиолдол:
+
+\begin{enumerate}
+  \item \textbf{Pivot сонголт.} Нэг хариулт ``дунд элементийг ав'' гэсэн,
+        нөгөө нь ``median-of-three'' санал болгов. Хоёулаа эрэмбэлэгдсэн
+        өгөгдөл дээр рекурсийн гүнийг $O(n)$ болгож
+        \texttt{StackOverflowError} өгөв. Эцсийн шийдэл болох
+        \texttt{(lo, hi)}-ээс хэш-ээр pivot сонгох аргыг бид хэмжилт хийсний
+        дараа өөрсдөө сонгосон (5-р бүлгийг үзнэ үү).
+  \item \textbf{Хоёр дэд ажлыг хэрхэн fork хийх.} Нэг хариулт
+        \texttt{left.fork(); right.fork(); left.join(); right.join();}
+        гэсэн, нөгөө нь \texttt{invokeAll(left, right)}. Сурах бичгийн
+        тайлбар ба JDK-ийн баримт бичигт тулгаж үзээд хоёр дахийг сонгов:
+        энэ нь нэг дэд ажлыг одоогийн урсгал өөрөө гүйцэтгэдэг тул дэмий
+        дараалалд оруулахгүй.
+  \item \textbf{Давхардсан утга их үеийн зан төлөв.} Нэг хариулт энгийн
+        хоёр талт хуваалтыг хангалттай гэсэн боловч \texttt{ALL\_EQUAL}
+        өгөгдөл дээр тест унав. Гурван талт (Dijkstra) хуваалтад шилжсэнээр
+        мод ганц зангилаа болж, хугацаа 2310\,мс $\to$ 196\,мс болов.
+\end{enumerate}
+
+Гол зарчим: \emph{маргааныг туслах биш, хэмжилт шийднэ}. Зөрөлдсөн бүх
+тохиолдолд эцсийн шийдвэрийг тест ба \texttt{--bench}-ийн тоо гаргасан.
+
+\subsection{Мониторинг --- хэрхэн хянасан}
+
+AI-гаас авсан аливаа саналыг дараах дөрвөн шүүлтүүрээр нэвтрүүлсэн:
+
+\begin{enumerate}
+  \item \textbf{Тест.} Санал нэвтрүүлэхийн өмнө ба дараа
+        \texttt{./test.sh} ажиллана. \texttt{58 давсан, 0 унасан} гэж
+        гараагүй бол санал буцаана.
+  \item \textbf{Хэмжилт.} Хурдтай холбоотой аливаа мэдэгдлийг
+        \texttt{./run.sh --bench} командаар өөрсдөө дахин хэмжинэ.
+        Тайлангийн 8-р бүлгийн бүх тоо ийм байдлаар гарсан --- AI-гаас
+        авсан тоо нэг ч байхгүй.
+  \item \textbf{Эзний хяналт.} Файл бүр нэг эзэнтэй
+        (\texttt{HUVAARILALT.md}). Эзэн нь кодоо мөр мөрөөр уншиж,
+        ойлгоогүй мөр үлдээхгүй. Багш, шүүмжлэгч багийн асуултад тухайн
+        эзэн хариулна.
+  \item \textbf{Git түүх.} AI-гийн дэмжлэгтэй хийгдсэн өөрчлөлт ч энгийн
+        commit хэлбэрээр түүхэнд үлддэг тул \texttt{git log -p} коммандаар
+        хэн, хэзээ, юу өөрчилснийг бүрэн эргүүлж хянах боломжтой.
+\end{enumerate}
+
+Мөн удирдамжийн 6-р хэсгийн дагуу \textbf{нууц түлхүүр, нууц үг, хувийн
+өгөгдлийг} аль ч туслахад оруулаагүй бөгөөд репозиторид ийм өгөгдөл
+байхгүй.
+
+\subsection{Юуг AI хийгээгүй вэ}
+
+\begin{itemize}
+  \item Алгоритмын сонголт ба threshold, pivot-ийн эцсийн шийдвэр ---
+        хэмжилтэд тулгуурлан баг гаргасан.
+  \item 8-р бүлгийн бүх хүснэгт, график --- бодит ажиллуулалтын гаралт
+        (\texttt{docs/bench.txt}).
+  \item 8.1-ийн дэлгэцийн агшин --- ажиллаж буй программаас авсан.
+  \item 9, 10-р бүлгийн дүгнэлт, хязгаарлалтууд --- өөрсдийн ажиглалт.
+\end{itemize}
+
+Товчоор: AI-г \emph{багш, хянагч} байдлаар ашигласан бөгөөд
+\emph{зохиогч} байдлаар ашиглаагүй. Тайлангийн бүх тоо энэ репозиторийн
+кодыг \texttt{./test.sh}, \texttt{./run.sh --bench} командаар ажиллуулж
+дахин давтагдана.
+
 \begin{thebibliography}{9}
 \bibitem{osc} Silberschatz, A., Galvin, P. B., Gagne, G.
   \emph{Operating System Concepts}, 10-р хэвлэл. Wiley, 2018.
@@ -1042,15 +1136,5 @@ Fork-join параллелизмд хамгийн чухал шийдвэр нь
 \bibitem{bentley} Bentley, J. L., McIlroy, M. D.
   \emph{Engineering a Sort Function}. Software: Practice and Experience, 1993.
 \end{thebibliography}
-
-\vfill
-\noindent\rule{\textwidth}{0.4pt}\\[2pt]
-\small
-\textbf{Бэлэн код, сан, AI ашигласан тухай.} Гадны сан, бэлэн эрэмбэлэх код
-ашиглаагүй --- бүх алгоритм энэ репозиторийн дотор бичигдсэн. AI туслах
-(Claude) ашиглан кодыг хянах, алдаа оношлох, тайлан бэлтгэхэд дэмжлэг авсан.
-Алгоритмын бүх шийдэл, хэмжилтийн бүх тоо нь энэ репозиторийн кодыг бодитоор
-ажиллуулж гаргасан үр дүн бөгөөд \texttt{./test.sh}, \texttt{./run.sh --bench}
-командуудаар дахин давтагдана.
 
 \end{document}
